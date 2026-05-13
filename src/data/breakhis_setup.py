@@ -180,6 +180,22 @@ def stratified_patient_split(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFra
     val_ids   = set(val_pts["patient_id"])
     test_ids  = set(test_pts["patient_id"])
 
+    # Para subtipos sem nenhum paciente no val, mover 1 paciente de train → val.
+    # Usa train (não test) para preservar test intacto — métricas finais do TCC
+    # são reportadas no test; val é usado só para early stopping.
+    for subtype in df["subtype"].unique():
+        subtype_patients = df[df["subtype"] == subtype]["patient_id"].unique()
+        in_val   = [p for p in subtype_patients if p in val_ids]
+        in_train = sorted([p for p in subtype_patients if p in train_ids])
+        if len(in_val) == 0 and len(in_train) > 0:
+            move_pt = in_train[0]  # determinístico: primeiro após sort
+            train_ids.discard(move_pt)
+            val_ids.add(move_pt)
+            log.info(
+                "Subtipo '%s' sem val → movendo paciente '%s' de train → val.",
+                subtype, move_pt,
+            )
+
     train_df = df[df["patient_id"].isin(train_ids)].copy()
     val_df   = df[df["patient_id"].isin(val_ids)].copy()
     test_df  = df[df["patient_id"].isin(test_ids)].copy()
