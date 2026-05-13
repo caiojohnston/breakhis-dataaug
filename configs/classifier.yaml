@@ -1,0 +1,9 @@
+model: efficientnet_b0
+pretrained: true
+num_classes: 8
+batch_size: 32
+epochs: 30
+lr: 1.0e-4
+weight_decay: 1.0e-4
+scheduler: cosine
+early_stopping_patience: 7

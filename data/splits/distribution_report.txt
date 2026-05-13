@@ -1,0 +1,42 @@
+======================================================================
+RELATÓRIO DE DISTRIBUIÇÃO — BreakHis Split Fase 1
+======================================================================
+
+Total de imagens :   7909
+  Train          :   5373 (67.9%)
+  Val            :   1033 (13.1%)
+  Test           :   1503 (19.0%)
+
+Pacientes únicos :     81
+  Train          :     55
+  Val            :      9
+  Test           :     17
+
+── Por Magnificação ──────────────────────────────────────────────
+  40×  train=1364  val= 249  test= 382
+  100×  train=1421  val= 267  test= 393
+  200×  train=1344  val= 285  test= 384
+  400×  train=1244  val= 232  test= 344
+
+── Por Subtipo ───────────────────────────────────────────────────
+  Subtipo                   label Classe      Total  Train   Val  Test
+  -----------------------------------------------------------------
+  adenosis                      0 benign        444    253    61   130
+  ductal_carcinoma              4 malignant    3451   2276   474   701
+  fibroadenoma                  1 benign       1014    758   120   136
+  lobular_carcinoma             5 malignant     626    523     0   103
+  mucinous_carcinoma            6 malignant     792    528   119   145
+  papillary_carcinoma           7 malignant     560    368   127    65
+  phyllodes_tumor               2 benign        453    295     0   158
+  tubular_adenoma               3 benign        569    372   132    65
+
+── Classe Binária ────────────────────────────────────────────────
+  benign       label_2=0  total= 2480  train= 1678  val= 313  test= 489
+  malignant    label_2=1  total= 5429  train= 3695  val= 720  test=1014
+
+── Overlap de Pacientes ──────────────────────────────────────────
+  train ∩ val  : 0 pacientes
+  train ∩ test : 0 pacientes
+  val   ∩ test : 0 pacientes
+
+======================================================================

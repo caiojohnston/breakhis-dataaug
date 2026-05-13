@@ -1,0 +1,58 @@
+# Claude Code
+CLAUDE.md
+.claude/
+
+# Dataset bruto — não versionar (4+ GB)
+data/raw/
+
+# Imagens sintéticas geradas
+data/synthetic/
+
+# Checkpoints e pesos de modelos
+checkpoints/
+
+# Resultados intermediários grandes
+results/*.pt
+results/*.pth
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# Ambientes virtuais
+.venv/
+venv/
+env/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Secrets / credenciais
+.env.local
+*.pem
+*.key
