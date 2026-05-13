@@ -1,10 +1,21 @@
+# LDM — VAE fine-tuning + Diffusion training
+
+# VAE
+vae_lr: 1.0e-5
+vae_epochs: 10
+vae_batch_size: 2
+kl_weight: 1.0e-4
+
+# LDM / UNet
 timesteps: 1000
-scheduler: ddpm
 ldm_lr: 1.0e-4
-ldm_batch_size: 16
 ldm_epochs: 100
+ldm_batch_size: 8      # conservador para GTX 1660 SUPER 6GB
 latent_channels: 4
 image_size: 256
 num_classes: 8
 embedding_dim: 512
+
+# Geração
 guidance_scale: 7.5
+gen_batch_size: 8      # batch de geração DDIM
