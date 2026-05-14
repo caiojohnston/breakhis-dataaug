@@ -182,7 +182,13 @@ def precompute_latents(
         all_labels.append(labels)
     all_latents = torch.cat(all_latents, dim=0)
     all_labels  = torch.cat(all_labels,  dim=0)
-    log.info("Latentes pré-codificados: %s", tuple(all_latents.shape))
+    n_nan = torch.isnan(all_latents).sum().item()
+    if n_nan > 0:
+        log.warning("%d NaN(s) nos latentes — substituindo por 0.", n_nan)
+        all_latents = torch.nan_to_num(all_latents, nan=0.0)
+    log.info("Latentes pré-codificados: %s | min=%.3f max=%.3f std=%.3f",
+             tuple(all_latents.shape),
+             all_latents.min().item(), all_latents.max().item(), all_latents.std().item())
     return all_latents, all_labels
 
 
@@ -227,12 +233,15 @@ def train_ldm(
     scheduler = DDPMScheduler(num_train_timesteps=timesteps)
     optimizer = AdamW(model.parameters(), lr=lr)
     lr_sched  = CosineAnnealingLR(optimizer, T_max=epochs)
-    scaler    = torch.amp.GradScaler("cuda") if device.type == "cuda" else None
+    # AMP desativado: FP16 causa NaN em cross-attention com pesos aleatórios do UNet
+    scaler    = None
 
     ckpt_dir  = checkpoints_dir / "ldm"
     ckpt_dir.mkdir(parents=True, exist_ok=True)
-    best_loss = float("inf")
-    best_path = ckpt_dir / "best.pt"
+    best_loss    = float("inf")
+    best_path    = ckpt_dir / "best.pt"
+    patience     = int(config.get("early_stopping_patience", 15))
+    no_improve   = 0
 
     for epoch in range(1, epochs + 1):
         model.train()
@@ -245,31 +254,35 @@ def train_ldm(
             noise = torch.randn_like(latents)
             noisy = scheduler.add_noise(latents, noise, t)
 
-            with torch.amp.autocast("cuda", enabled=(device.type == "cuda")):
-                pred = model(noisy, t, labels, cfg_dropout_prob=0.1)
-                loss = nn.functional.mse_loss(pred, noise)
+            pred = model(noisy, t, labels, cfg_dropout_prob=0.1)
+            loss = nn.functional.mse_loss(pred, noise)
+
+            if torch.isnan(loss):
+                log.warning("NaN na loss detectado — pulando batch.")
+                optimizer.zero_grad()
+                continue
 
             optimizer.zero_grad()
-            if scaler:
-                scaler.scale(loss).backward()
-                scaler.unscale_(optimizer)
-                nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-                scaler.step(optimizer)
-                scaler.update()
-            else:
-                loss.backward()
-                nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-                optimizer.step()
+            loss.backward()
+            nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            optimizer.step()
             epoch_loss += loss.item() * len(latents)
 
         epoch_loss /= len(train_ds)
         lr_sched.step()
-        log.info("LDM epoch %03d/%03d | loss=%.4f", epoch, epochs, epoch_loss)
+        log.info("LDM epoch %03d/%03d | loss=%.4f | no_improve=%d/%d",
+                 epoch, epochs, epoch_loss, no_improve, patience)
         torch.save(model.state_dict(), ckpt_dir / f"epoch_{epoch:03d}.pt")
 
         if epoch_loss < best_loss:
-            best_loss = epoch_loss
+            best_loss  = epoch_loss
+            no_improve = 0
             torch.save(model.state_dict(), best_path)
+        else:
+            no_improve += 1
+            if no_improve >= patience:
+                log.info("Early stopping: %d épocas sem melhora. Melhor loss=%.4f", patience, best_loss)
+                break
 
     log.info("LDM training concluído. Checkpoint: %s", best_path)
     return best_path

@@ -13,6 +13,8 @@ class ConditionedLDM(nn.Module):
         super().__init__()
         # +1 para null class (CFG)
         self.class_embedding = nn.Embedding(num_classes + 1, embedding_dim)
+        # std=0.02 evita overflow FP16 em cross-attention (mesmo range que BERT/GPT)
+        nn.init.normal_(self.class_embedding.weight, mean=0.0, std=0.02)
         self.unet = UNet2DConditionModel(
             sample_size=32,          # latente 256/8
             in_channels=4,
