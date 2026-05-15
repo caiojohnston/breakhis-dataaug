@@ -245,7 +245,8 @@ def train_ldm(
 
     for epoch in range(1, epochs + 1):
         model.train()
-        epoch_loss = 0.0
+        epoch_loss   = 0.0
+        n_valid      = 0
         for latents, labels in tqdm(train_loader, desc=f"LDM epoch {epoch}/{epochs}", leave=False):
             latents = latents.to(device)
             labels  = labels.to(device)
@@ -257,8 +258,8 @@ def train_ldm(
             pred = model(noisy, t, labels, cfg_dropout_prob=0.1)
             loss = nn.functional.mse_loss(pred, noise)
 
-            if torch.isnan(loss):
-                log.warning("NaN na loss detectado — pulando batch.")
+            if not torch.isfinite(loss):
+                log.warning("Loss não-finita detectada — pulando batch.")
                 optimizer.zero_grad()
                 continue
 
@@ -267,14 +268,15 @@ def train_ldm(
             nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             optimizer.step()
             epoch_loss += loss.item() * len(latents)
+            n_valid    += len(latents)
 
-        epoch_loss /= len(train_ds)
+        epoch_loss = epoch_loss / n_valid if n_valid > 0 else float("nan")
         lr_sched.step()
         log.info("LDM epoch %03d/%03d | loss=%.4f | no_improve=%d/%d",
                  epoch, epochs, epoch_loss, no_improve, patience)
         torch.save(model.state_dict(), ckpt_dir / f"epoch_{epoch:03d}.pt")
 
-        if epoch_loss < best_loss:
+        if n_valid > 0 and epoch_loss < best_loss:
             best_loss  = epoch_loss
             no_improve = 0
             torch.save(model.state_dict(), best_path)
@@ -326,7 +328,10 @@ def main() -> None:
     if args.stage in ("ldm", "all"):
         if vae_ckpt is None:
             vae_ckpt = args.checkpoints_dir / "vae" / "best.pt"
-        train_ldm(config, args.splits_dir, args.checkpoints_dir, vae_ckpt)
+        ldm_best = train_ldm(config, args.splits_dir, args.checkpoints_dir, vae_ckpt)
+        marker = args.checkpoints_dir / "ldm" / "training_complete.txt"
+        marker.write_text("ok")
+        log.info("Marcador de conclusão salvo: %s", marker)
 
 
 if __name__ == "__main__":

@@ -166,7 +166,8 @@ def generate(
 
     ddim = DDIMScheduler(
         num_train_timesteps=int(config["timesteps"]),
-        beta_schedule="squaredcos_cap_v2",
+        beta_schedule="linear",
+        clip_sample=False,
     )
 
     to_generate = compute_generation_counts(splits_dir / "train.csv")

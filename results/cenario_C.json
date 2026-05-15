@@ -1,0 +1,160 @@
+{
+  "scenario": "C",
+  "accuracy": 0.4398,
+  "f1_macro": 0.2495,
+  "auc_roc_per_subtype": {
+    "adenosis": 0.7806,
+    "fibroadenoma": 0.7259,
+    "phyllodes_tumor": 0.6153,
+    "tubular_adenoma": 0.902,
+    "ductal_carcinoma": 0.8735,
+    "lobular_carcinoma": 0.5657,
+    "mucinous_carcinoma": 0.7352,
+    "papillary_carcinoma": 0.4334
+  },
+  "confusion_matrix": [
+    [
+      43,
+      6,
+      1,
+      4,
+      6,
+      11,
+      59,
+      0
+    ],
+    [
+      2,
+      30,
+      7,
+      52,
+      13,
+      1,
+      29,
+      2
+    ],
+    [
+      32,
+      109,
+      1,
+      0,
+      0,
+      9,
+      7,
+      0
+    ],
+    [
+      4,
+      11,
+      1,
+      31,
+      1,
+      0,
+      17,
+      0
+    ],
+    [
+      5,
+      1,
+      0,
+      4,
+      478,
+      92,
+      96,
+      25
+    ],
+    [
+      1,
+      5,
+      0,
+      0,
+      74,
+      8,
+      15,
+      0
+    ],
+    [
+      16,
+      20,
+      4,
+      21,
+      6,
+      7,
+      70,
+      1
+    ],
+    [
+      0,
+      1,
+      0,
+      16,
+      19,
+      1,
+      28,
+      0
+    ]
+  ],
+  "classification_report": {
+    "adenosis": {
+      "precision": 0.4174757281553398,
+      "recall": 0.33076923076923076,
+      "f1-score": 0.36909871244635195,
+      "support": 130.0
+    },
+    "fibroadenoma": {
+      "precision": 0.16393442622950818,
+      "recall": 0.22058823529411764,
+      "f1-score": 0.18808777429467086,
+      "support": 136.0
+    },
+    "phyllodes_tumor": {
+      "precision": 0.07142857142857142,
+      "recall": 0.006329113924050633,
+      "f1-score": 0.011627906976744186,
+      "support": 158.0
+    },
+    "tubular_adenoma": {
+      "precision": 0.2421875,
+      "recall": 0.47692307692307695,
+      "f1-score": 0.32124352331606215,
+      "support": 65.0
+    },
+    "ductal_carcinoma": {
+      "precision": 0.8006700167504187,
+      "recall": 0.68188302425107,
+      "f1-score": 0.736517719568567,
+      "support": 701.0
+    },
+    "lobular_carcinoma": {
+      "precision": 0.06201550387596899,
+      "recall": 0.07766990291262135,
+      "f1-score": 0.06896551724137931,
+      "support": 103.0
+    },
+    "mucinous_carcinoma": {
+      "precision": 0.21806853582554517,
+      "recall": 0.4827586206896552,
+      "f1-score": 0.30042918454935624,
+      "support": 145.0
+    },
+    "papillary_carcinoma": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 65.0
+    },
+    "accuracy": 0.4397870924817033,
+    "macro avg": {
+      "precision": 0.24697253528316904,
+      "recall": 0.2846151505954778,
+      "f1-score": 0.24949629229914147,
+      "support": 1503.0
+    },
+    "weighted avg": {
+      "precision": 0.4676460710240147,
+      "recall": 0.4397870924817033,
+      "f1-score": 0.44128104437328997,
+      "support": 1503.0
+    }
+  }
+}
