@@ -1,0 +1,25 @@
+# Classificador v2 - protocolo de recuperacao do baseline BreakHis
+# Objetivo: melhorar 8 subtipos sem sobrescrever resultados historicos v1.
+
+model: tf_efficientnetv2_b1.in1k
+pretrained: true
+num_classes: 8
+batch_size: 24
+num_workers: 0
+epochs: 40
+lr: 5.0e-5
+weight_decay: 1.0e-4
+scheduler: cosine
+early_stopping_patience: 10
+
+# Mudancas centrais vs classifier.yaml:
+# - backbone mais forte que EfficientNet-B0
+# - Focal Loss para reduzir dominancia de ductal_carcinoma
+# - pesos por classe calculados a partir do treino efetivo de cada cenario
+# - checkpoint escolhido por macro F1 de validacao
+loss: focal
+focal_gamma: 2.0
+class_weights: true
+weighted_sampler: false
+selection_metric: f1_macro
+result_suffix: _v2

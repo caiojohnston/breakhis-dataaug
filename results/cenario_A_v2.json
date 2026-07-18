@@ -1,0 +1,365 @@
+{
+  "scenario": "A",
+  "best_epoch": 8,
+  "selection_metric": "f1_macro",
+  "best_selection_score": 0.155,
+  "config": {
+    "model": "tf_efficientnetv2_b1.in1k",
+    "pretrained": true,
+    "num_classes": 8,
+    "batch_size": 24,
+    "num_workers": 0,
+    "epochs": 40,
+    "lr": 5e-05,
+    "weight_decay": 0.0001,
+    "scheduler": "cosine",
+    "early_stopping_patience": 10,
+    "loss": "focal",
+    "focal_gamma": 2.0,
+    "class_weights": true,
+    "weighted_sampler": false,
+    "selection_metric": "f1_macro",
+    "result_suffix": "_v2"
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 1.4422,
+      "train_accuracy": 0.3072,
+      "val_loss": 7.7889,
+      "val_accuracy": 0.1473,
+      "val_f1_macro": 0.1207,
+      "val_balanced_accuracy": 0.1331,
+      "val_auc_macro": 0.5004
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.4241,
+      "train_accuracy": 0.6306,
+      "val_loss": 9.0069,
+      "val_accuracy": 0.2034,
+      "val_f1_macro": 0.1367,
+      "val_balanced_accuracy": 0.1449,
+      "val_auc_macro": 0.5289
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.188,
+      "train_accuracy": 0.7903,
+      "val_loss": 9.8805,
+      "val_accuracy": 0.2358,
+      "val_f1_macro": 0.1502,
+      "val_balanced_accuracy": 0.1634,
+      "val_auc_macro": 0.5517
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.1219,
+      "train_accuracy": 0.844,
+      "val_loss": 11.309,
+      "val_accuracy": 0.2629,
+      "val_f1_macro": 0.1519,
+      "val_balanced_accuracy": 0.1617,
+      "val_auc_macro": 0.55
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.0794,
+      "train_accuracy": 0.897,
+      "val_loss": 11.4078,
+      "val_accuracy": 0.2741,
+      "val_f1_macro": 0.1462,
+      "val_balanced_accuracy": 0.1528,
+      "val_auc_macro": 0.5458
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.0489,
+      "train_accuracy": 0.9248,
+      "val_loss": 11.919,
+      "val_accuracy": 0.2814,
+      "val_f1_macro": 0.1462,
+      "val_balanced_accuracy": 0.1581,
+      "val_auc_macro": 0.5556
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.0409,
+      "train_accuracy": 0.9424,
+      "val_loss": 12.1654,
+      "val_accuracy": 0.2801,
+      "val_f1_macro": 0.1536,
+      "val_balanced_accuracy": 0.1596,
+      "val_auc_macro": 0.556
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.0286,
+      "train_accuracy": 0.9565,
+      "val_loss": 12.1458,
+      "val_accuracy": 0.2952,
+      "val_f1_macro": 0.155,
+      "val_balanced_accuracy": 0.1604,
+      "val_auc_macro": 0.563
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.0217,
+      "train_accuracy": 0.9667,
+      "val_loss": 12.2418,
+      "val_accuracy": 0.2972,
+      "val_f1_macro": 0.1537,
+      "val_balanced_accuracy": 0.1632,
+      "val_auc_macro": 0.5604
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.0179,
+      "train_accuracy": 0.9714,
+      "val_loss": 12.7688,
+      "val_accuracy": 0.3032,
+      "val_f1_macro": 0.1474,
+      "val_balanced_accuracy": 0.1537,
+      "val_auc_macro": 0.5655
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.0157,
+      "train_accuracy": 0.9742,
+      "val_loss": 12.9042,
+      "val_accuracy": 0.3018,
+      "val_f1_macro": 0.1428,
+      "val_balanced_accuracy": 0.1484,
+      "val_auc_macro": 0.561
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.0147,
+      "train_accuracy": 0.9806,
+      "val_loss": 13.5585,
+      "val_accuracy": 0.2926,
+      "val_f1_macro": 0.1344,
+      "val_balanced_accuracy": 0.14,
+      "val_auc_macro": 0.5596
+    },
+    {
+      "epoch": 13,
+      "train_loss": 0.0159,
+      "train_accuracy": 0.9779,
+      "val_loss": 12.9758,
+      "val_accuracy": 0.2873,
+      "val_f1_macro": 0.1337,
+      "val_balanced_accuracy": 0.14,
+      "val_auc_macro": 0.5598
+    },
+    {
+      "epoch": 14,
+      "train_loss": 0.0123,
+      "train_accuracy": 0.9836,
+      "val_loss": 13.5211,
+      "val_accuracy": 0.2926,
+      "val_f1_macro": 0.1454,
+      "val_balanced_accuracy": 0.1471,
+      "val_auc_macro": 0.5547
+    },
+    {
+      "epoch": 15,
+      "train_loss": 0.0089,
+      "train_accuracy": 0.9865,
+      "val_loss": 13.4307,
+      "val_accuracy": 0.2999,
+      "val_f1_macro": 0.143,
+      "val_balanced_accuracy": 0.1483,
+      "val_auc_macro": 0.5689
+    },
+    {
+      "epoch": 16,
+      "train_loss": 0.0094,
+      "train_accuracy": 0.9867,
+      "val_loss": 13.6654,
+      "val_accuracy": 0.3005,
+      "val_f1_macro": 0.1305,
+      "val_balanced_accuracy": 0.1393,
+      "val_auc_macro": 0.5735
+    },
+    {
+      "epoch": 17,
+      "train_loss": 0.0061,
+      "train_accuracy": 0.99,
+      "val_loss": 14.0366,
+      "val_accuracy": 0.3038,
+      "val_f1_macro": 0.1318,
+      "val_balanced_accuracy": 0.1374,
+      "val_auc_macro": 0.5673
+    },
+    {
+      "epoch": 18,
+      "train_loss": 0.0127,
+      "train_accuracy": 0.9886,
+      "val_loss": 13.8496,
+      "val_accuracy": 0.2886,
+      "val_f1_macro": 0.1418,
+      "val_balanced_accuracy": 0.148,
+      "val_auc_macro": 0.5533
+    }
+  ],
+  "accuracy": 0.4544,
+  "balanced_accuracy": 0.2589,
+  "f1_macro": 0.2571,
+  "auc_macro": 0.6503,
+  "auc_roc_per_subtype": {
+    "adenosis": 0.892,
+    "fibroadenoma": 0.6103,
+    "phyllodes_tumor": 0.2319,
+    "tubular_adenoma": 0.8183,
+    "ductal_carcinoma": 0.8976,
+    "lobular_carcinoma": 0.4567,
+    "mucinous_carcinoma": 0.8,
+    "papillary_carcinoma": 0.4954
+  },
+  "confusion_matrix": [
+    [
+      52,
+      6,
+      0,
+      0,
+      13,
+      26,
+      31,
+      2
+    ],
+    [
+      0,
+      21,
+      10,
+      18,
+      10,
+      3,
+      44,
+      30
+    ],
+    [
+      19,
+      128,
+      0,
+      2,
+      2,
+      7,
+      0,
+      0
+    ],
+    [
+      1,
+      11,
+      8,
+      17,
+      1,
+      0,
+      16,
+      11
+    ],
+    [
+      3,
+      17,
+      2,
+      0,
+      529,
+      54,
+      30,
+      66
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      73,
+      0,
+      0,
+      30
+    ],
+    [
+      19,
+      17,
+      3,
+      5,
+      15,
+      12,
+      57,
+      17
+    ],
+    [
+      0,
+      4,
+      11,
+      6,
+      9,
+      0,
+      28,
+      7
+    ]
+  ],
+  "classification_report": {
+    "adenosis": {
+      "precision": 0.5531914893617021,
+      "recall": 0.4,
+      "f1-score": 0.4642857142857143,
+      "support": 130.0
+    },
+    "fibroadenoma": {
+      "precision": 0.10294117647058823,
+      "recall": 0.15441176470588236,
+      "f1-score": 0.12352941176470589,
+      "support": 136.0
+    },
+    "phyllodes_tumor": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 158.0
+    },
+    "tubular_adenoma": {
+      "precision": 0.3541666666666667,
+      "recall": 0.26153846153846155,
+      "f1-score": 0.3008849557522124,
+      "support": 65.0
+    },
+    "ductal_carcinoma": {
+      "precision": 0.8113496932515337,
+      "recall": 0.7546362339514978,
+      "f1-score": 0.7819660014781966,
+      "support": 701.0
+    },
+    "lobular_carcinoma": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 103.0
+    },
+    "mucinous_carcinoma": {
+      "precision": 0.2766990291262136,
+      "recall": 0.3931034482758621,
+      "f1-score": 0.3247863247863248,
+      "support": 145.0
+    },
+    "papillary_carcinoma": {
+      "precision": 0.04294478527607362,
+      "recall": 0.1076923076923077,
+      "f1-score": 0.06140350877192982,
+      "support": 65.0
+    },
+    "accuracy": 0.45442448436460414,
+    "macro avg": {
+      "precision": 0.26766160501909725,
+      "recall": 0.2589227770205014,
+      "f1-score": 0.2571069896048855,
+      "support": 1503.0
+    },
+    "weighted avg": {
+      "precision": 0.4794441997245013,
+      "recall": 0.45442448436460414,
+      "f1-score": 0.4630459595352262,
+      "support": 1503.0
+    }
+  }
+}

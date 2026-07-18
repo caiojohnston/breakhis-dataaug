@@ -1,0 +1,294 @@
+{
+  "scenario": "A",
+  "best_epoch": 1,
+  "selection_metric": "f1_macro",
+  "best_selection_score": 0.1384,
+  "config": {
+    "model": "tf_efficientnetv2_b1.in1k",
+    "pretrained": true,
+    "num_classes": 8,
+    "batch_size": 24,
+    "num_workers": 0,
+    "epochs": 40,
+    "lr": 5e-05,
+    "weight_decay": 0.0001,
+    "scheduler": "cosine",
+    "early_stopping_patience": 10,
+    "loss": "cross_entropy",
+    "class_weights": false,
+    "weighted_sampler": false,
+    "selection_metric": "f1_macro",
+    "result_suffix": "_v2_ce"
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 1.5968,
+      "train_accuracy": 0.4939,
+      "val_loss": 2.8526,
+      "val_accuracy": 0.2919,
+      "val_f1_macro": 0.1384,
+      "val_balanced_accuracy": 0.1416,
+      "val_auc_macro": 0.5378
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.5248,
+      "train_accuracy": 0.8217,
+      "val_loss": 3.3671,
+      "val_accuracy": 0.2946,
+      "val_f1_macro": 0.1288,
+      "val_balanced_accuracy": 0.1362,
+      "val_auc_macro": 0.5425
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.2613,
+      "train_accuracy": 0.9188,
+      "val_loss": 3.6075,
+      "val_accuracy": 0.2952,
+      "val_f1_macro": 0.1209,
+      "val_balanced_accuracy": 0.1277,
+      "val_auc_macro": 0.5494
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.1582,
+      "train_accuracy": 0.9558,
+      "val_loss": 3.8576,
+      "val_accuracy": 0.3018,
+      "val_f1_macro": 0.1197,
+      "val_balanced_accuracy": 0.1298,
+      "val_auc_macro": 0.5542
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.1047,
+      "train_accuracy": 0.9744,
+      "val_loss": 4.0102,
+      "val_accuracy": 0.3032,
+      "val_f1_macro": 0.1199,
+      "val_balanced_accuracy": 0.1284,
+      "val_auc_macro": 0.553
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.0671,
+      "train_accuracy": 0.9857,
+      "val_loss": 4.2292,
+      "val_accuracy": 0.3065,
+      "val_f1_macro": 0.1271,
+      "val_balanced_accuracy": 0.1356,
+      "val_auc_macro": 0.5613
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.0574,
+      "train_accuracy": 0.9865,
+      "val_loss": 4.3539,
+      "val_accuracy": 0.2999,
+      "val_f1_macro": 0.1157,
+      "val_balanced_accuracy": 0.1226,
+      "val_auc_macro": 0.558
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.0413,
+      "train_accuracy": 0.9916,
+      "val_loss": 4.2937,
+      "val_accuracy": 0.3032,
+      "val_f1_macro": 0.116,
+      "val_balanced_accuracy": 0.1253,
+      "val_auc_macro": 0.5733
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.0295,
+      "train_accuracy": 0.9953,
+      "val_loss": 4.5072,
+      "val_accuracy": 0.3058,
+      "val_f1_macro": 0.122,
+      "val_balanced_accuracy": 0.1326,
+      "val_auc_macro": 0.5575
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.0287,
+      "train_accuracy": 0.9945,
+      "val_loss": 4.7261,
+      "val_accuracy": 0.3098,
+      "val_f1_macro": 0.1188,
+      "val_balanced_accuracy": 0.1289,
+      "val_auc_macro": 0.5641
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.024,
+      "train_accuracy": 0.9949,
+      "val_loss": 4.7477,
+      "val_accuracy": 0.3065,
+      "val_f1_macro": 0.1133,
+      "val_balanced_accuracy": 0.124,
+      "val_auc_macro": 0.5599
+    }
+  ],
+  "accuracy": 0.4651,
+  "balanced_accuracy": 0.223,
+  "f1_macro": 0.2102,
+  "auc_macro": 0.6445,
+  "auc_roc_per_subtype": {
+    "adenosis": 0.7706,
+    "fibroadenoma": 0.6461,
+    "phyllodes_tumor": 0.3201,
+    "tubular_adenoma": 0.8291,
+    "ductal_carcinoma": 0.8839,
+    "lobular_carcinoma": 0.3766,
+    "mucinous_carcinoma": 0.7978,
+    "papillary_carcinoma": 0.5319
+  },
+  "confusion_matrix": [
+    [
+      17,
+      14,
+      3,
+      2,
+      35,
+      20,
+      37,
+      2
+    ],
+    [
+      0,
+      22,
+      6,
+      37,
+      21,
+      2,
+      24,
+      24
+    ],
+    [
+      18,
+      118,
+      0,
+      5,
+      9,
+      5,
+      2,
+      1
+    ],
+    [
+      1,
+      16,
+      6,
+      18,
+      5,
+      0,
+      6,
+      13
+    ],
+    [
+      10,
+      23,
+      4,
+      3,
+      592,
+      21,
+      26,
+      22
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      92,
+      0,
+      1,
+      10
+    ],
+    [
+      6,
+      22,
+      8,
+      11,
+      26,
+      10,
+      47,
+      15
+    ],
+    [
+      0,
+      9,
+      5,
+      9,
+      15,
+      1,
+      23,
+      3
+    ]
+  ],
+  "classification_report": {
+    "adenosis": {
+      "precision": 0.3269230769230769,
+      "recall": 0.13076923076923078,
+      "f1-score": 0.18681318681318682,
+      "support": 130.0
+    },
+    "fibroadenoma": {
+      "precision": 0.09821428571428571,
+      "recall": 0.16176470588235295,
+      "f1-score": 0.12222222222222222,
+      "support": 136.0
+    },
+    "phyllodes_tumor": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 158.0
+    },
+    "tubular_adenoma": {
+      "precision": 0.21176470588235294,
+      "recall": 0.27692307692307694,
+      "f1-score": 0.24,
+      "support": 65.0
+    },
+    "ductal_carcinoma": {
+      "precision": 0.7446540880503144,
+      "recall": 0.8445078459343794,
+      "f1-score": 0.7914438502673797,
+      "support": 701.0
+    },
+    "lobular_carcinoma": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 103.0
+    },
+    "mucinous_carcinoma": {
+      "precision": 0.28313253012048195,
+      "recall": 0.32413793103448274,
+      "f1-score": 0.3022508038585209,
+      "support": 145.0
+    },
+    "papillary_carcinoma": {
+      "precision": 0.03333333333333333,
+      "recall": 0.046153846153846156,
+      "f1-score": 0.03870967741935484,
+      "support": 65.0
+    },
+    "accuracy": 0.46506986027944114,
+    "macro avg": {
+      "precision": 0.21225275250298065,
+      "recall": 0.2230320795871711,
+      "f1-score": 0.21017996757258306,
+      "support": 1503.0
+    },
+    "weighted avg": {
+      "precision": 0.42238539454218416,
+      "recall": 0.46506986027944114,
+      "f1-score": 0.43755992756960305,
+      "support": 1503.0
+    }
+  }
+}

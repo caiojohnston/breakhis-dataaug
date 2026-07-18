@@ -1,0 +1,23 @@
+# Classificador binario - downstream principal benigno vs maligno
+# Mantem o split patient-wise e usa o LDM condicionado por 8 subtipos no Cenario C.
+
+model: efficientnet_b0
+pretrained: true
+num_classes: 2
+class_names:
+  - benign
+  - malignant
+label_column: label_2
+batch_size: 32
+num_workers: 0
+epochs: 30
+lr: 1.0e-4
+weight_decay: 1.0e-4
+scheduler: cosine
+early_stopping_patience: 7
+
+loss: cross_entropy
+class_weights: false
+weighted_sampler: false
+selection_metric: f1_macro
+result_suffix: _binary

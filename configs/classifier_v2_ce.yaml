@@ -1,0 +1,19 @@
+# Classificador v2 CE - ablacao do backbone sem pesos agressivos
+# Objetivo: isolar EfficientNetV2-B1 antes de combinar com balanceamento ou sinteticas.
+
+model: tf_efficientnetv2_b1.in1k
+pretrained: true
+num_classes: 8
+batch_size: 24
+num_workers: 0
+epochs: 40
+lr: 5.0e-5
+weight_decay: 1.0e-4
+scheduler: cosine
+early_stopping_patience: 10
+
+loss: cross_entropy
+class_weights: false
+weighted_sampler: false
+selection_metric: f1_macro
+result_suffix: _v2_ce

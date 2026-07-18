@@ -25,8 +25,10 @@ class BreakHisDataset(Dataset):
         scenario: str,
         split: str,
         synthetic_dir: Path | None = None,
+        label_column: str = "label_8",
     ) -> None:
         self.transform = get_transforms(scenario, split)
+        self.label_column = label_column
         df = pd.read_csv(csv_path)
 
         if split == "train" and scenario == "C" and synthetic_dir is not None:
@@ -39,8 +41,11 @@ class BreakHisDataset(Dataset):
                     len(df) - len(syn_df), len(syn_df), len(df),
                 )
 
+        if label_column not in df.columns:
+            raise ValueError(f"Coluna de label nao encontrada: {label_column}")
+
         self.filepaths = df["filepath"].tolist()
-        self.labels    = df["label_8"].tolist()
+        self.labels    = df[label_column].astype(int).tolist()
 
     def _load_synthetic(self, synthetic_dir: Path) -> list[dict]:
         """Varre synthetic_dir/{subtipo}/*.png e retorna registros com label_8."""
@@ -58,6 +63,7 @@ class BreakHisDataset(Dataset):
                 records.append({
                     "filepath":   str(img_path),
                     "label_8":    label_8,
+                    "label_2":    0 if class_type == "benign" else 1,
                     "class_type": class_type,
                     "subtype":    subtype_dir.name,
                 })
