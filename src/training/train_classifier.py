@@ -123,8 +123,16 @@ def build_dataloaders(
     config: dict,
 ) -> tuple[DataLoader, DataLoader, DataLoader, BreakHisDataset]:
     label_column = str(config.get("label_column", "label_8"))
+    synthetic_fraction = float(config.get("synthetic_fraction", 1.0))
+    synthetic_seed = int(config.get("synthetic_seed", 42))
     train_ds = BreakHisDataset(
-        splits_dir / "train.csv", scenario, "train", synthetic_dir, label_column=label_column
+        splits_dir / "train.csv",
+        scenario,
+        "train",
+        synthetic_dir,
+        label_column=label_column,
+        synthetic_fraction=synthetic_fraction,
+        synthetic_seed=synthetic_seed,
     )
     val_ds = BreakHisDataset(
         splits_dir / "val.csv", scenario, "val", label_column=label_column
@@ -133,6 +141,8 @@ def build_dataloaders(
         splits_dir / "test.csv", scenario, "test", label_column=label_column
     )
     log.info("Label column: %s", label_column)
+    if scenario == "C":
+        log.info("Synthetic fraction: %.2f | seed=%d", synthetic_fraction, synthetic_seed)
 
     num_workers = int(config.get("num_workers", min(4, torch.get_num_threads())))
     log.info("DataLoader num_workers: %d", num_workers)

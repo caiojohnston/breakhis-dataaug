@@ -192,3 +192,55 @@ Foram gerados:
 | C | 0.6800 | 0.8436 | 0.8338 | 0.8259 | 0.9113 |
 
 Leitura para o TCC: o Cenario C e consistentemente superior ao B e lidera nas metricas mais adequadas para dados desbalanceados (`balanced_accuracy` e `AUC`). A vantagem sobre A nao aparece em accuracy/F1, mas aparece em AUC e balanced accuracy, sugerindo melhor discriminacao probabilistica com necessidade de calibracao.
+
+## 2026-07-18 - Preparacao da abla??o C25/C50/C100
+
+Foi adicionado suporte a `synthetic_fraction` no `BreakHisDataset`, com amostragem deterministica por subtipo (`synthetic_seed`).
+
+Configs criadas:
+
+- `configs/classifier_binary_c25.yaml`
+- `configs/classifier_binary_c50.yaml`
+- `configs/classifier_binary_c100.yaml`
+
+Proxima execucao planejada: C50 binario.
+
+## 2026-07-18 - Pausa operacional C50
+
+O treino `C` com `configs/classifier_binary_c50.yaml` foi interrompido para liberar o computador.
+
+Ultimo estado no log:
+
+```text
+Epoch 20/30 | train_loss=0.3909 acc=0.7619 | val_loss=4.2054 acc=0.8217 | val_f1=0.7863 bal_acc=0.7679 auc=0.8345
+```
+
+Melhor checkpoint salvo ate a interrupcao:
+
+```text
+Epoch 18/30 | val_f1=0.7962 | val_balanced_accuracy=0.7814 | val_auc=0.8358
+```
+
+Nao foi gerado JSON final de teste para C50 porque a interrupcao ocorreu durante a epoca 21, antes da avaliacao final.
+
+## 2026-07-18 - Resultado C50 parcial avaliado no teste
+
+Arquivo consolidado: `results/cenario_C_binary_c50_partial.json`.
+
+O `best.pt` parcial de C50 foi avaliado com threshold escolhido na validacao para maximizar F1 macro.
+
+| Variante | Accuracy | Balanced accuracy | F1 macro | AUC |
+|---|---:|---:|---:|---:|
+| A binario | 0.8589 | 0.8113 | 0.8288 | 0.8979 |
+| B binario | 0.8430 | 0.8127 | 0.8180 | 0.9036 |
+| C100 binario | 0.8490 | 0.8224 | 0.8260 | 0.9114 |
+| C50 parcial | 0.8849 | 0.8676 | 0.8686 | 0.9215 |
+
+Matriz de confusao C50 parcial:
+
+```text
+[[400, 89],
+ [ 84, 930]]
+```
+
+Leitura: C50 parcial supera A, B e C100 em todas as metricas principais. Isso sustenta uma narrativa mais forte: sinteticas LDM ajudam, mas a proporcao importa; C100 pode diluir o dominio real, enquanto C50 melhora generalizacao.

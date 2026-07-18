@@ -50,7 +50,7 @@ Antes de fine-tunar VAE, rerodar A/B/C com classificador mais forte e protocolo 
 | Rodar Cenario B binario | Concluido |
 | Rodar Cenario C binario | Concluido |
 | Comparar A/B/C binarios | Concluido |
-| Avaliar necessidade de C25/C50/C100 | Recomendado como proxima abla??o, mas nao bloqueia narrativa atual |
+| Avaliar necessidade de C25/C50/C100 | C50 parcial avaliado e virou melhor resultado atual |
 | Implementar avaliacao gerativa | Pendente |
 | Diagnosticar viabilidade 8 subtipos patient-wise | Concluido - poucas classes tem 3 a 7 pacientes no total |
 | Criar rota downstream binaria | Concluido |
@@ -199,3 +199,56 @@ Threshold escolhido em validacao e aplicado no teste.
 | C | 0.6800 | 0.8436 | 0.8338 | 0.8259 | 0.9113 |
 
 Conclusao: C e o melhor em AUC e balanced accuracy, inclusive apos calibracao. A narrativa defensavel e que o LDM melhora discriminacao probabilistica e equilibrio entre classes frente ao aumento classico, embora A ainda fique ligeiramente acima em accuracy/F1 em algumas leituras.
+
+## Ablacao de Fracao Sintetica
+
+Data: 2026-07-18
+
+Objetivo: testar se reduzir a quantidade de imagens sinteticas melhora accuracy/F1 do Cenario C sem perder o ganho observado em AUC/balanced accuracy.
+
+Configs criadas:
+
+- `configs/classifier_binary_c25.yaml` (`synthetic_fraction: 0.25`)
+- `configs/classifier_binary_c50.yaml` (`synthetic_fraction: 0.50`)
+- `configs/classifier_binary_c100.yaml` (`synthetic_fraction: 1.00`)
+
+Decisao operacional: iniciar por C50, pois reduz a dominancia das sinteticas com custo menor que C100 e ainda testa a hipotese central.
+
+## Pausa Operacional C50
+
+Data: 2026-07-18
+
+O treino `C` com `configs/classifier_binary_c50.yaml` foi interrompido a pedido do usuario para liberar o computador.
+
+Estado salvo:
+
+- Checkpoints disponiveis: `epoch_01.pt` ate `epoch_20.pt`.
+- Melhor checkpoint atual: `checkpoints/cenario_C_binary_c50/best.pt`, salvo na epoca 18.
+- Melhor validacao observada: `val_f1_macro=0.7962`, `val_balanced_accuracy=0.7814`, `val_auc_macro=0.8358`.
+- Nao ha `results/cenario_C_binary_c50.json` final porque o treino foi parado antes da avaliacao de teste.
+
+Proxima acao recomendada: avaliar o `best.pt` parcial no teste ou retomar o experimento C50 do zero em uma janela livre.
+
+## Resultado C50 Parcial
+
+Data: 2026-07-18
+
+Arquivo: `results/cenario_C_binary_c50_partial.json`
+
+O checkpoint parcial `checkpoints/cenario_C_binary_c50/best.pt` foi avaliado no teste. Esse `best.pt` corresponde a melhor validacao ate a interrupcao operacional do treino C50.
+
+| Variante | Accuracy | Balanced accuracy | F1 macro | AUC | Decisao |
+|---|---:|---:|---:|---:|---|
+| A binario | 0.8589 | 0.8113 | 0.8288 | 0.8979 | argmax |
+| B binario | 0.8430 | 0.8127 | 0.8180 | 0.9036 | argmax |
+| C100 binario | 0.8490 | 0.8224 | 0.8260 | 0.9114 | argmax |
+| C50 parcial | 0.8849 | 0.8676 | 0.8686 | 0.9215 | threshold val F1=0.39 |
+
+Matriz de confusao do C50 parcial no teste:
+
+```text
+[[400, 89],
+ [ 84, 930]]
+```
+
+Conclusao: reduzir as sinteticas para 50% resolveu a queda de accuracy/F1 observada no C100 e preservou o ganho em AUC/balanced accuracy. Este e o melhor resultado atual para defender a metodologia.

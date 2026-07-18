@@ -1,6 +1,7 @@
 """PyTorch Dataset para os três cenários experimentais do TCC."""
 
 import logging
+import random
 from pathlib import Path
 
 import pandas as pd
@@ -26,6 +27,8 @@ class BreakHisDataset(Dataset):
         split: str,
         synthetic_dir: Path | None = None,
         label_column: str = "label_8",
+        synthetic_fraction: float = 1.0,
+        synthetic_seed: int = 42,
     ) -> None:
         self.transform = get_transforms(scenario, split)
         self.label_column = label_column
@@ -33,6 +36,9 @@ class BreakHisDataset(Dataset):
 
         if split == "train" and scenario == "C" and synthetic_dir is not None:
             synthetic_records = self._load_synthetic(synthetic_dir)
+            synthetic_records = self._sample_synthetic_records(
+                synthetic_records, synthetic_fraction, synthetic_seed
+            )
             if synthetic_records:
                 syn_df = pd.DataFrame(synthetic_records)
                 df = pd.concat([df, syn_df], ignore_index=True)
@@ -68,6 +74,36 @@ class BreakHisDataset(Dataset):
                     "subtype":    subtype_dir.name,
                 })
         return records
+
+    def _sample_synthetic_records(
+        self,
+        records: list[dict],
+        fraction: float,
+        seed: int,
+    ) -> list[dict]:
+        """Amostra uma fracao deterministica das sinteticas por subtipo."""
+        if fraction >= 1.0:
+            return records
+        if fraction <= 0.0:
+            return []
+
+        rng = random.Random(seed)
+        grouped: dict[str, list[dict]] = {}
+        for record in records:
+            grouped.setdefault(record["subtype"], []).append(record)
+
+        sampled: list[dict] = []
+        for subtype in sorted(grouped):
+            subtype_records = grouped[subtype]
+            n_keep = max(1, int(round(len(subtype_records) * fraction)))
+            n_keep = min(n_keep, len(subtype_records))
+            sampled.extend(
+                sorted(
+                    rng.sample(subtype_records, n_keep),
+                    key=lambda item: item["filepath"],
+                )
+            )
+        return sampled
 
     def __len__(self) -> int:
         return len(self.filepaths)

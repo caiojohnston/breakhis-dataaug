@@ -1,0 +1,25 @@
+# Classificador binario - ablacao com fracao de sinteticas LDM
+# Usado somente para o Cenario C.
+
+model: efficientnet_b0
+pretrained: true
+num_classes: 2
+class_names:
+  - benign
+  - malignant
+label_column: label_2
+batch_size: 32
+num_workers: 0
+epochs: 30
+lr: 1.0e-4
+weight_decay: 1.0e-4
+scheduler: cosine
+early_stopping_patience: 7
+
+loss: cross_entropy
+class_weights: false
+weighted_sampler: false
+selection_metric: f1_macro
+synthetic_seed: 42
+synthetic_fraction: 1.00
+result_suffix: _binary_c100
