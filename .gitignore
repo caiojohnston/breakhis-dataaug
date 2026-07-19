@@ -51,6 +51,8 @@ desktop.ini
 # Logs
 *.log
 logs/
+results/run_status.json
+results/run_status.*.json
 
 # Secrets / credenciais
 .env.local

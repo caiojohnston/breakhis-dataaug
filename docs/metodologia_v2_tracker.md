@@ -51,6 +51,7 @@ Antes de fine-tunar VAE, rerodar A/B/C com classificador mais forte e protocolo 
 | Rodar Cenario C binario | Concluido |
 | Comparar A/B/C binarios | Concluido |
 | Avaliar necessidade de C25/C50/C100 | Concluido - C25 e melhor experimento completo; C50 parcial e melhor checkpoint observado em F1 |
+| Criar execucao monitorada para runs longas | Concluido - `docs/operacao_runs_monitoradas.md` e `src/utils/*monitored*.py` |
 | Implementar avaliacao gerativa | Pendente |
 | Diagnosticar viabilidade 8 subtipos patient-wise | Concluido - poucas classes tem 3 a 7 pacientes no total |
 | Criar rota downstream binaria | Concluido |
