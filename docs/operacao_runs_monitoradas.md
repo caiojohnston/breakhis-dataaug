@@ -6,15 +6,15 @@ mantem um log vivo e atualiza `results/run_status.json`.
 
 ## Iniciar uma run longa
 
-Exemplo para o C50 binario:
+Exemplo para o C50 binario completo, sem sobrescrever o C50 parcial:
 
 ```powershell
 .venv\Scripts\python src/utils/start_monitored.py `
-  --name cenario_C_binary_c50 `
-  --log logs/cenario_C_binary_c50.log `
-  --checkpoint-dir checkpoints/cenario_C_binary_c50 `
-  --results-path results/cenario_C_binary_c50.json `
-  -- .venv\Scripts\python -u src/training/train_classifier.py --scenario C --config configs/classifier_binary_c50.yaml
+  --name cenario_C_binary_c50_full `
+  --log logs/cenario_C_binary_c50_full.log `
+  --checkpoint-dir checkpoints/cenario_C_binary_c50_full `
+  --results-path results/cenario_C_binary_c50_full.json `
+  -- .venv\Scripts\python -u src/training/train_classifier.py --scenario C --config configs/classifier_binary_c50_full.yaml
 ```
 
 O comando retorna rapido. O treino continua em background.
