@@ -279,3 +279,42 @@ C25 usa 25% das sinteticas geradas: `4892` imagens reais + `3082` sinteticas = `
 | C50 parcial calibrado | 0.8849 | 0.8676 | 0.8686 | 0.9215 | melhor checkpoint observado, treino interrompido |
 
 Conclusao: C25 fornece a narrativa mais limpa para o TCC, pois e um treino completo e supera A/B/C100 em todas as metricas principais. C50 parcial permanece como evidencia complementar de que a proporcao de sinteticas pode ser otimizada.
+
+## Resultado C50_full Completo
+
+Data: 2026-07-19
+
+Arquivos:
+
+- `results/cenario_C_binary_c50_full.json`
+- `results/c50_full/comparativo_binary_thresholds_f1-macro.json`
+- `results/c50_full/comparativo_binary_thresholds_balanced-accuracy.json`
+- `results/comparativo_binary_ablation.json`
+- `results/comparativo_binary_ablation.md`
+
+C50_full usa 50% das sinteticas geradas: `4892` imagens reais + `6164` sinteticas = `11056` imagens de treino.
+
+Treino: early stopping na epoca 26, melhor checkpoint na epoca 19 (`val_f1_macro=0.7954`).
+
+| Variante | Accuracy | Balanced accuracy | F1 macro | AUC | Observacao |
+|---|---:|---:|---:|---:|---|
+| C25 argmax | 0.8756 | 0.8416 | 0.8531 | 0.9405 | melhor AUC completo |
+| C50_full argmax | 0.8729 | 0.8381 | 0.8498 | 0.9263 | completo, threshold 0.50 |
+| C25 calibrado | 0.8789 | 0.8520 | 0.8591 | 0.9376 | threshold val balanced=0.79 |
+| C50_full calibrado | 0.8802 | 0.8673 | 0.8646 | 0.9222 | melhor completo por F1/balanced/accuracy |
+| C50 parcial calibrado | 0.8849 | 0.8676 | 0.8686 | 0.9215 | evidencia complementar, treino interrompido |
+
+Conclusao atualizada: C50_full calibrado fornece a narrativa principal por ser completo e superar A/B/C100/C25 em F1 macro, balanced accuracy e accuracy. C25 segue relevante por ter a maior AUC. C50 parcial fica como evidencia complementar quase identica ao C50_full, mas nao deve ser tratado como resultado principal por ter sido interrompido.
+
+## Avaliacao Gerativa Amostrada
+
+Data: 2026-07-19
+
+Arquivos:
+
+- `results/metricas_gerativas.json`
+- `results/metricas_gerativas.md`
+
+Resumo: FID global amostrado = `219.668`. Os subtipos gerados tiveram SSIM baixo (`0.1095` a `0.1820`) e LPIPS alto (`0.7789` a `0.8421`), indicando que as imagens sinteticas ainda estao distantes da distribuicao real em metricas perceptuais.
+
+Interpretacao: a contribuicao principal das sinteticas neste experimento e downstream, nao a substituicao perfeita do dominio real. Isso reforca a narrativa de uso controlado como augmentacao: C50_full calibrado melhora F1/balanced accuracy/accuracy mesmo com FID alto, enquanto C100 sugere que excesso de sinteticas pode diluir o dominio real.

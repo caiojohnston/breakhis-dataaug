@@ -51,8 +51,10 @@ desktop.ini
 # Logs
 *.log
 logs/
-results/run_status.json
-results/run_status.*.json
+results/run_status*.json
+results/generative_eval_tmp/
+results/model_cache/
+inception-2015-12-05.pt
 
 # Secrets / credenciais
 .env.local

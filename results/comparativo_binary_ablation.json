@@ -1,9 +1,18 @@
 {
-  "summary": "Binary downstream ablation. C25 is the best completed argmax experiment; C50 partial is an interrupted checkpoint evaluation.",
+  "summary": {
+    "best_completed_by_f1_macro": "C50_full calibrated",
+    "best_completed_f1_macro": 0.8646,
+    "best_completed_by_auc": "C25",
+    "best_completed_auc": 0.9405,
+    "best_observed_by_f1_macro": "C50_partial calibrated",
+    "best_observed_f1_macro": 0.8686,
+    "interpretation": "C50_full calibrado e o melhor experimento completo por F1/balanced accuracy; C25 permanece melhor em AUC; C50_partial e evidencia complementar por ter sido interrompido."
+  },
   "rows": [
     {
       "variant": "A",
       "kind": "completed_argmax",
+      "threshold": null,
       "accuracy": 0.8589,
       "balanced_accuracy": 0.8113,
       "f1_macro": 0.8288,
@@ -18,11 +27,13 @@
           53,
           961
         ]
-      ]
+      ],
+      "source": "results/cenario_A_binary.json"
     },
     {
       "variant": "B",
       "kind": "completed_argmax",
+      "threshold": null,
       "accuracy": 0.843,
       "balanced_accuracy": 0.8127,
       "f1_macro": 0.818,
@@ -37,11 +48,13 @@
           102,
           912
         ]
-      ]
+      ],
+      "source": "results/cenario_B_binary.json"
     },
     {
       "variant": "C100",
       "kind": "completed_argmax",
+      "threshold": null,
       "accuracy": 0.849,
       "balanced_accuracy": 0.8224,
       "f1_macro": 0.826,
@@ -56,11 +69,13 @@
           103,
           911
         ]
-      ]
+      ],
+      "source": "results/cenario_C_binary.json"
     },
     {
       "variant": "C25",
       "kind": "completed_argmax",
+      "threshold": null,
       "accuracy": 0.8756,
       "balanced_accuracy": 0.8416,
       "f1_macro": 0.8531,
@@ -75,7 +90,29 @@
           62,
           952
         ]
-      ]
+      ],
+      "source": "results/cenario_C_binary_c25.json"
+    },
+    {
+      "variant": "C50_full",
+      "kind": "completed_argmax",
+      "threshold": null,
+      "accuracy": 0.8729,
+      "balanced_accuracy": 0.8381,
+      "f1_macro": 0.8498,
+      "auc": 0.9263,
+      "best_epoch": 19,
+      "confusion_matrix": [
+        [
+          361,
+          128
+        ],
+        [
+          63,
+          951
+        ]
+      ],
+      "source": "results/cenario_C_binary_c50_full.json"
     },
     {
       "variant": "C25 calibrated",
@@ -95,10 +132,32 @@
           72,
           942
         ]
-      ]
+      ],
+      "source": "results/c25/comparativo_binary_thresholds_balanced-accuracy.json"
     },
     {
-      "variant": "C50 partial calibrated",
+      "variant": "C50_full calibrated",
+      "kind": "threshold_balanced_accuracy",
+      "threshold": 0.97,
+      "accuracy": 0.8802,
+      "balanced_accuracy": 0.8673,
+      "f1_macro": 0.8646,
+      "auc": 0.9222,
+      "best_epoch": null,
+      "confusion_matrix": [
+        [
+          406,
+          83
+        ],
+        [
+          97,
+          917
+        ]
+      ],
+      "source": "results/c50_full/comparativo_binary_thresholds_balanced-accuracy.json"
+    },
+    {
+      "variant": "C50_partial calibrated",
       "kind": "threshold_f1_macro_partial",
       "threshold": 0.39,
       "accuracy": 0.8849,
@@ -115,7 +174,8 @@
           84,
           930
         ]
-      ]
+      ],
+      "source": "results/c50_partial/comparativo_binary_thresholds_f1-macro.json"
     }
   ]
 }

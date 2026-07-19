@@ -1,0 +1,113 @@
+{
+  "FID_global": 219.668,
+  "global_scope": "generated_subtypes_only_sampled",
+  "seed": 42,
+  "image_size": 256,
+  "max_fid_images_per_subtype": 300,
+  "max_pairs_per_subtype": 100,
+  "per_subtype": {
+    "adenosis": {
+      "FID": 284.7316,
+      "SSIM": 0.182,
+      "LPIPS": 0.8421,
+      "PSNR": 8.5844,
+      "n_real": 253,
+      "n_synthetic": 1900,
+      "n_fid_real": 253,
+      "n_fid_synthetic": 253,
+      "n_pairs": 100,
+      "lpips_error": null,
+      "status": "ok"
+    },
+    "fibroadenoma": {
+      "FID": 235.7016,
+      "SSIM": 0.1341,
+      "LPIPS": 0.8399,
+      "PSNR": 8.2475,
+      "n_real": 758,
+      "n_synthetic": 1395,
+      "n_fid_real": 300,
+      "n_fid_synthetic": 300,
+      "n_pairs": 100,
+      "lpips_error": null,
+      "status": "ok"
+    },
+    "phyllodes_tumor": {
+      "FID": 308.5863,
+      "SSIM": 0.1251,
+      "LPIPS": 0.8216,
+      "PSNR": 7.7415,
+      "n_real": 60,
+      "n_synthetic": 2093,
+      "n_fid_real": 60,
+      "n_fid_synthetic": 60,
+      "n_pairs": 60,
+      "lpips_error": null,
+      "status": "ok"
+    },
+    "tubular_adenoma": {
+      "FID": 257.8646,
+      "SSIM": 0.1095,
+      "LPIPS": 0.807,
+      "PSNR": 8.2711,
+      "n_real": 372,
+      "n_synthetic": 1781,
+      "n_fid_real": 300,
+      "n_fid_synthetic": 300,
+      "n_pairs": 100,
+      "lpips_error": null,
+      "status": "ok"
+    },
+    "ductal_carcinoma": {
+      "FID": null,
+      "SSIM": null,
+      "LPIPS": null,
+      "PSNR": null,
+      "n_real": 2153,
+      "n_synthetic": 0,
+      "n_fid_real": 0,
+      "n_fid_synthetic": 0,
+      "n_pairs": 0,
+      "status": "skipped_no_synthetic_images"
+    },
+    "lobular_carcinoma": {
+      "FID": 230.1126,
+      "SSIM": 0.1557,
+      "LPIPS": 0.7789,
+      "PSNR": 9.013,
+      "n_real": 400,
+      "n_synthetic": 1753,
+      "n_fid_real": 300,
+      "n_fid_synthetic": 300,
+      "n_pairs": 100,
+      "lpips_error": null,
+      "status": "ok"
+    },
+    "mucinous_carcinoma": {
+      "FID": 259.4122,
+      "SSIM": 0.1179,
+      "LPIPS": 0.7957,
+      "PSNR": 7.6713,
+      "n_real": 528,
+      "n_synthetic": 1625,
+      "n_fid_real": 300,
+      "n_fid_synthetic": 300,
+      "n_pairs": 100,
+      "lpips_error": null,
+      "status": "ok"
+    },
+    "papillary_carcinoma": {
+      "FID": 247.6999,
+      "SSIM": 0.1439,
+      "LPIPS": 0.7801,
+      "PSNR": 8.4586,
+      "n_real": 368,
+      "n_synthetic": 1785,
+      "n_fid_real": 300,
+      "n_fid_synthetic": 300,
+      "n_pairs": 100,
+      "lpips_error": null,
+      "status": "ok"
+    }
+  }
+}

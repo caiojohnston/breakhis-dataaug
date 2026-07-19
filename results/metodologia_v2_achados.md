@@ -274,8 +274,44 @@ Matriz de confusao C25 argmax:
 Matriz de confusao C25 calibrado:
 
 ```text
-[[391, 98],
- [ 84, 930]]
+[[379, 110],
+ [ 72, 942]]
 ```
 
 Leitura: C25 e o melhor experimento completo e sustenta a tese de que sinteticas LDM melhoram o downstream quando usadas em proporcao controlada. A comparacao C25 vs C100 indica que excesso de sinteticas pode diluir o dominio real.
+
+## 2026-07-19 - Resultado C50_full completo
+
+Resultado salvo em `results/cenario_C_binary_c50_full.json`.
+
+C50_full usa 50% das sinteticas LDM, totalizando `4892` reais + `6164` sinteticas. O treino foi monitorado por `results/run_status.json`, concluiu com early stopping na epoca 26 e melhor checkpoint na epoca 19 (`val_f1_macro=0.7954`).
+
+| Variante | Accuracy | Balanced accuracy | F1 macro | AUC | Observacao |
+|---|---:|---:|---:|---:|---|
+| C25 argmax | 0.8756 | 0.8416 | 0.8531 | 0.9405 | melhor AUC completo |
+| C50_full argmax | 0.8729 | 0.8381 | 0.8498 | 0.9263 | completo, threshold 0.50 |
+| C25 calibrado | 0.8789 | 0.8520 | 0.8591 | 0.9376 | threshold val balanced=0.79 |
+| C50_full calibrado | 0.8802 | 0.8673 | 0.8646 | 0.9222 | melhor completo por F1/balanced/accuracy |
+| C50 parcial calibrado | 0.8849 | 0.8676 | 0.8686 | 0.9215 | evidencia complementar, treino interrompido |
+
+Matriz de confusao C50_full calibrado:
+
+```text
+[[406, 83],
+ [ 97, 917]]
+```
+
+Leitura: C50_full calibrado passa a ser o melhor experimento completo por F1 macro, balanced accuracy e accuracy. C25 permanece melhor em AUC. A conclusao metodologica fica mais forte: sinteticas LDM ajudam o downstream quando a proporcao e controlada, e C100 sugere que excesso de sinteticas pode diluir o dominio real.
+
+## Avaliacao Gerativa Amostrada
+
+Data: 2026-07-19
+
+Arquivos:
+
+- `results/metricas_gerativas.json`
+- `results/metricas_gerativas.md`
+
+Resumo: FID global amostrado = `219.668`. Os subtipos gerados tiveram SSIM baixo (`0.1095` a `0.1820`) e LPIPS alto (`0.7789` a `0.8421`), indicando que as imagens sinteticas ainda estao distantes da distribuicao real em metricas perceptuais.
+
+Interpretacao: a contribuicao principal das sinteticas neste experimento e downstream, nao a substituicao perfeita do dominio real. Isso reforca a narrativa de uso controlado como augmentacao: C50_full calibrado melhora F1/balanced accuracy/accuracy mesmo com FID alto, enquanto C100 sugere que excesso de sinteticas pode diluir o dominio real.
