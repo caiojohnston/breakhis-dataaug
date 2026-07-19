@@ -25,6 +25,23 @@ O comando retorna rapido. O treino continua em background.
 .venv\Scripts\python src/utils/show_run_status.py
 ```
 
+## Painel visivel em uma janela separada
+
+Para deixar um painel atualizando em outro terminal:
+
+```powershell
+.\watch_status.ps1
+```
+
+Para abrir uma nova janela do PowerShell com o painel:
+
+```powershell
+.\open_status_window.ps1
+```
+
+O painel mostra barra de progresso por epoca, metricas atuais, checkpoint mais recente,
+ultimas linhas do log e dica de pausa segura.
+
 Para ver mais linhas finais do log:
 
 ```powershell
