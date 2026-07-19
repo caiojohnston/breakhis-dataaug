@@ -50,7 +50,7 @@ Antes de fine-tunar VAE, rerodar A/B/C com classificador mais forte e protocolo 
 | Rodar Cenario B binario | Concluido |
 | Rodar Cenario C binario | Concluido |
 | Comparar A/B/C binarios | Concluido |
-| Avaliar necessidade de C25/C50/C100 | C50 parcial avaliado e virou melhor resultado atual |
+| Avaliar necessidade de C25/C50/C100 | Concluido - C25 e melhor experimento completo; C50 parcial e melhor checkpoint observado em F1 |
 | Implementar avaliacao gerativa | Pendente |
 | Diagnosticar viabilidade 8 subtipos patient-wise | Concluido - poucas classes tem 3 a 7 pacientes no total |
 | Criar rota downstream binaria | Concluido |
@@ -252,3 +252,28 @@ Matriz de confusao do C50 parcial no teste:
 ```
 
 Conclusao: reduzir as sinteticas para 50% resolveu a queda de accuracy/F1 observada no C100 e preservou o ganho em AUC/balanced accuracy. Este e o melhor resultado atual para defender a metodologia.
+
+## Resultado C25 Completo
+
+Data: 2026-07-18
+
+Arquivos:
+
+- `results/cenario_C_binary_c25.json`
+- `results/c25/comparativo_binary_thresholds_f1-macro.json`
+- `results/c25/comparativo_binary_thresholds_balanced-accuracy.json`
+- `results/comparativo_binary_ablation.json`
+- `results/comparativo_binary_ablation.md`
+
+C25 usa 25% das sinteticas geradas: `4892` imagens reais + `3082` sinteticas = `7974` imagens de treino.
+
+| Variante | Accuracy | Balanced accuracy | F1 macro | AUC | Observacao |
+|---|---:|---:|---:|---:|---|
+| A binario | 0.8589 | 0.8113 | 0.8288 | 0.8979 | baseline real |
+| B binario | 0.8430 | 0.8127 | 0.8180 | 0.9036 | aumento classico |
+| C100 binario | 0.8490 | 0.8224 | 0.8260 | 0.9114 | 100% sinteticas |
+| C25 binario | 0.8756 | 0.8416 | 0.8531 | 0.9405 | melhor experimento completo |
+| C25 calibrado | 0.8789 | 0.8520 | 0.8591 | 0.9376 | threshold val balanced=0.79 |
+| C50 parcial calibrado | 0.8849 | 0.8676 | 0.8686 | 0.9215 | melhor checkpoint observado, treino interrompido |
+
+Conclusao: C25 fornece a narrativa mais limpa para o TCC, pois e um treino completo e supera A/B/C100 em todas as metricas principais. C50 parcial permanece como evidencia complementar de que a proporcao de sinteticas pode ser otimizada.

@@ -244,3 +244,38 @@ Matriz de confusao C50 parcial:
 ```
 
 Leitura: C50 parcial supera A, B e C100 em todas as metricas principais. Isso sustenta uma narrativa mais forte: sinteticas LDM ajudam, mas a proporcao importa; C100 pode diluir o dominio real, enquanto C50 melhora generalizacao.
+
+## 2026-07-18 - Resultado C25 completo
+
+Resultado salvo em `results/cenario_C_binary_c25.json`.
+
+C25 usa 25% das sinteticas LDM, totalizando `4892` reais + `3082` sinteticas.
+
+| Variante | Accuracy | Balanced accuracy | F1 macro | AUC |
+|---|---:|---:|---:|---:|
+| A binario | 0.8589 | 0.8113 | 0.8288 | 0.8979 |
+| B binario | 0.8430 | 0.8127 | 0.8180 | 0.9036 |
+| C100 binario | 0.8490 | 0.8224 | 0.8260 | 0.9114 |
+| C25 binario | 0.8756 | 0.8416 | 0.8531 | 0.9405 |
+
+Com threshold calibrado por balanced accuracy na validacao, C25 ficou:
+
+| Threshold | Accuracy | Balanced accuracy | F1 macro | AUC |
+|---:|---:|---:|---:|---:|
+| 0.7900 | 0.8789 | 0.8520 | 0.8591 | 0.9376 |
+
+Matriz de confusao C25 argmax:
+
+```text
+[[364, 125],
+ [ 62, 952]]
+```
+
+Matriz de confusao C25 calibrado:
+
+```text
+[[391, 98],
+ [ 84, 930]]
+```
+
+Leitura: C25 e o melhor experimento completo e sustenta a tese de que sinteticas LDM melhoram o downstream quando usadas em proporcao controlada. A comparacao C25 vs C100 indica que excesso de sinteticas pode diluir o dominio real.

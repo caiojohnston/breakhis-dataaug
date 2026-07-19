@@ -1,0 +1,121 @@
+{
+  "summary": "Binary downstream ablation. C25 is the best completed argmax experiment; C50 partial is an interrupted checkpoint evaluation.",
+  "rows": [
+    {
+      "variant": "A",
+      "kind": "completed_argmax",
+      "accuracy": 0.8589,
+      "balanced_accuracy": 0.8113,
+      "f1_macro": 0.8288,
+      "auc": 0.8979,
+      "best_epoch": 13,
+      "confusion_matrix": [
+        [
+          330,
+          159
+        ],
+        [
+          53,
+          961
+        ]
+      ]
+    },
+    {
+      "variant": "B",
+      "kind": "completed_argmax",
+      "accuracy": 0.843,
+      "balanced_accuracy": 0.8127,
+      "f1_macro": 0.818,
+      "auc": 0.9036,
+      "best_epoch": 14,
+      "confusion_matrix": [
+        [
+          355,
+          134
+        ],
+        [
+          102,
+          912
+        ]
+      ]
+    },
+    {
+      "variant": "C100",
+      "kind": "completed_argmax",
+      "accuracy": 0.849,
+      "balanced_accuracy": 0.8224,
+      "f1_macro": 0.826,
+      "auc": 0.9114,
+      "best_epoch": 7,
+      "confusion_matrix": [
+        [
+          365,
+          124
+        ],
+        [
+          103,
+          911
+        ]
+      ]
+    },
+    {
+      "variant": "C25",
+      "kind": "completed_argmax",
+      "accuracy": 0.8756,
+      "balanced_accuracy": 0.8416,
+      "f1_macro": 0.8531,
+      "auc": 0.9405,
+      "best_epoch": 24,
+      "confusion_matrix": [
+        [
+          364,
+          125
+        ],
+        [
+          62,
+          952
+        ]
+      ]
+    },
+    {
+      "variant": "C25 calibrated",
+      "kind": "threshold_balanced_accuracy",
+      "threshold": 0.79,
+      "accuracy": 0.8789,
+      "balanced_accuracy": 0.852,
+      "f1_macro": 0.8591,
+      "auc": 0.9376,
+      "best_epoch": null,
+      "confusion_matrix": [
+        [
+          379,
+          110
+        ],
+        [
+          72,
+          942
+        ]
+      ]
+    },
+    {
+      "variant": "C50 partial calibrated",
+      "kind": "threshold_f1_macro_partial",
+      "threshold": 0.39,
+      "accuracy": 0.8849,
+      "balanced_accuracy": 0.8676,
+      "f1_macro": 0.8686,
+      "auc": 0.9215,
+      "best_epoch": null,
+      "confusion_matrix": [
+        [
+          400,
+          89
+        ],
+        [
+          84,
+          930
+        ]
+      ]
+    }
+  ]
+}
