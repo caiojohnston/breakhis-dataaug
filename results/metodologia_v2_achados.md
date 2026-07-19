@@ -315,3 +315,27 @@ Arquivos:
 Resumo: FID global amostrado = `219.668`. Os subtipos gerados tiveram SSIM baixo (`0.1095` a `0.1820`) e LPIPS alto (`0.7789` a `0.8421`), indicando que as imagens sinteticas ainda estao distantes da distribuicao real em metricas perceptuais.
 
 Interpretacao: a contribuicao principal das sinteticas neste experimento e downstream, nao a substituicao perfeita do dominio real. Isso reforca a narrativa de uso controlado como augmentacao: C50_full calibrado melhora F1/balanced accuracy/accuracy mesmo com FID alto, enquanto C100 sugere que excesso de sinteticas pode diluir o dominio real.
+
+## Testes Estatisticos Downstream
+
+Data: 2026-07-19
+
+Arquivos:
+
+- `results/statistical_tests.json`
+- `results/statistical_tests.md`
+
+Comparacao pareada no conjunto de teste entre `A_binary_argmax` e `C50_full_calibrated`.
+
+| Teste/Metrica | Resultado |
+|---|---|
+| McNemar exato por imagem | p=0.017169; significativo a 5% |
+| A correto / C50 errado | 69 |
+| A errado / C50 correto | 101 |
+| Bootstrap por paciente - accuracy | diff=0.0219; IC95% [-0.0357, 0.0812] |
+| Bootstrap por paciente - balanced accuracy | diff=0.0618; IC95% [-0.0005, 0.1230] |
+| Bootstrap por paciente - F1 macro | diff=0.0411; IC95% [-0.0295, 0.1105] |
+| Bootstrap por paciente - AUC | diff=0.0325; IC95% [-0.0125, 0.1211] |
+
+Leitura: por imagem, o ganho do C50_full calibrado sobre o baseline A e estatisticamente significativo. Por paciente, o ganho permanece positivo em todas as metricas, mas os intervalos de confianca cruzam ou quase cruzam zero devido ao tamanho reduzido do teste (`17` pacientes). Para o TCC, a formulacao correta e: evidencia quantitativa favoravel e promissora, com cautela estatistica no nivel do paciente.
+

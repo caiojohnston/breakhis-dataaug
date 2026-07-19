@@ -1,0 +1,78 @@
+{
+  "comparison": "A_binary_argmax_vs_C50_full_calibrated",
+  "test_set": {
+    "images": 1503,
+    "patients": 17
+  },
+  "bootstrap": {
+    "n_resamples": 5000,
+    "seed": 42,
+    "unit": "patient_id"
+  },
+  "models": [
+    {
+      "name": "A_binary_argmax",
+      "scenario": "A",
+      "config_path": "configs\\classifier_binary.yaml",
+      "checkpoint_path": "checkpoints\\cenario_A_binary\\best.pt",
+      "threshold": 0.5,
+      "metrics": {
+        "accuracy": 0.8589,
+        "balanced_accuracy": 0.8113,
+        "f1_macro": 0.8288,
+        "auc": 0.8946
+      }
+    },
+    {
+      "name": "C50_full_calibrated",
+      "scenario": "C",
+      "config_path": "configs\\classifier_binary_c50_full.yaml",
+      "checkpoint_path": "checkpoints\\cenario_C_binary_c50_full\\best.pt",
+      "threshold": 0.97,
+      "metrics": {
+        "accuracy": 0.8802,
+        "balanced_accuracy": 0.8673,
+        "f1_macro": 0.8646,
+        "auc": 0.9222
+      }
+    }
+  ],
+  "mcnemar_exact": {
+    "a_correct_b_wrong": 69,
+    "a_wrong_b_correct": 101,
+    "discordant_pairs": 170,
+    "p_value_exact_two_sided": 0.017169,
+    "significant_at_0_05": true
+  },
+  "bootstrap_patient_level": {
+    "accuracy": {
+      "n": 4980,
+      "mean_diff_b_minus_a": 0.0219,
+      "ci95_low": -0.0357,
+      "ci95_high": 0.0812,
+      "p_bootstrap_two_sided_around_zero": 0.460241
+    },
+    "balanced_accuracy": {
+      "n": 4980,
+      "mean_diff_b_minus_a": 0.0618,
+      "ci95_low": -0.0005,
+      "ci95_high": 0.123,
+      "p_bootstrap_two_sided_around_zero": 0.05261
+    },
+    "f1_macro": {
+      "n": 4980,
+      "mean_diff_b_minus_a": 0.0411,
+      "ci95_low": -0.0295,
+      "ci95_high": 0.1105,
+      "p_bootstrap_two_sided_around_zero": 0.25502
+    },
+    "auc": {
+      "n": 4980,
+      "mean_diff_b_minus_a": 0.0325,
+      "ci95_low": -0.0125,
+      "ci95_high": 0.1211,
+      "p_bootstrap_two_sided_around_zero": 0.318072
+    }
+  },
+  "interpretation": "O ganho de C50_full calibrado sobre A e positivo nas metricas principais. A significancia deve ser interpretada com cautela porque ha apenas 17 pacientes no teste; por isso o bootstrap por paciente e mais conservador do que uma analise por imagem."
+}
