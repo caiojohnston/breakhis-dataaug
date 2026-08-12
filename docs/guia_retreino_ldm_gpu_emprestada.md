@@ -140,6 +140,12 @@ senão mostra vazio/nada):
 .venv\Scripts\python src\utils\show_run_status.py --status results\run_status_ldm_v2.json
 ```
 
+Pra ficar acompanhando em tempo real, atualizando sozinho (`Ctrl+C` sai sem
+matar o treino):
+```powershell
+while ($true) { Clear-Host; .venv\Scripts\python src\utils\show_run_status.py --status results\run_status_ldm_v2.json; Start-Sleep -Seconds 15 }
+```
+
 Pode fechar essa janela do PowerShell à vontade — o processo é desanexado de
 verdade (testado), continua rodando mesmo se fechar. Só não desliga o PC.
 
