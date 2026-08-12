@@ -133,17 +133,22 @@ Repara no `--checkpoints-dir checkpoints/ldm_v2_16gb` — isso é de propósito,
 pra não sobrescrever os checkpoints do treino original que já geraram os
 resultados do TCC (`checkpoints/ldm/`). Não muda esse caminho.
 
-O comando volta rápido, o treino continua rodando por trás. Pra acompanhar:
+O comando volta rápido, o treino continua rodando por trás. Pra acompanhar
+(repara no `--status` — tem que ser o mesmo arquivo usado no comando acima,
+senão mostra vazio/nada):
 ```powershell
-.venv\Scripts\python src\utils\show_run_status.py
+.venv\Scripts\python src\utils\show_run_status.py --status results\run_status_ldm_v2.json
 ```
 
-Pode fechar o terminal e voltar depois — o treino continua rodando (é
-processo em background). Só não desliga o PC.
+Pode fechar essa janela do PowerShell à vontade — o processo é desanexado de
+verdade (testado), continua rodando mesmo se fechar. Só não desliga o PC.
 
 **Se precisar parar antes de terminar:** o checkpoint é salvo ao final de cada
-época, então é seguro parar. `.venv\Scripts\python src\utils\stop_monitored.py`
-(ou `--force` se não responder).
+época, então é seguro parar.
+```powershell
+.venv\Scripts\python src\utils\stop_monitored.py --status results\run_status_ldm_v2.json
+```
+(acrescenta `--force` no final se não responder.)
 
 ## 6. Quando terminar
 
@@ -191,7 +196,9 @@ histórico de loss e os números da avaliação — isso sim é permanente.
   roda o find-max-batch de novo.
 - **Terminal fecha sozinho / perde conexão:** o processo continua rodando
   (é background de verdade, não depende do terminal ficar aberto). Só reabre
-  outro PowerShell na mesma pasta e roda `show_run_status.py` de novo.
+  outro PowerShell na mesma pasta e roda `show_run_status.py --status
+  results\run_status_ldm_v2.json` de novo (sem o `--status` ele olha o
+  arquivo errado e parece que não tem nada rodando).
 - **Loss vira `nan`:** já aconteceu antes (ver `docs/investigacao_ldm_v2.md` e
   `CLAUDE.md`) — foi bug de FP16/AMP. Esse config usa FP32 (mesma solução de
   antes), não deveria acontecer. Se acontecer mesmo assim, para o treino e
