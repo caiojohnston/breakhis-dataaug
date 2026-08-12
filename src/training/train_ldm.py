@@ -108,7 +108,10 @@ def train_vae(config: dict, splits_dir: Path, checkpoints_dir: Path) -> Path:
     model     = BreakHisVAE().to(device)
     optimizer = AdamW(model.parameters(), lr=lr)
     scheduler = CosineAnnealingLR(optimizer, T_max=epochs)
-    scaler    = torch.amp.GradScaler("cuda") if device.type == "cuda" else None
+    # AMP desativado: mesmo problema de instabilidade em FP16 ja documentado
+    # pro LDM (NaN/crash) — nao testado no estagio do VAE antes, mas o crash
+    # silencioso batendo logo apos o autocast entrar em cena aponta pra mesma causa.
+    scaler = None
 
     ckpt_dir = checkpoints_dir / "vae"
     ckpt_dir.mkdir(parents=True, exist_ok=True)
@@ -121,17 +124,11 @@ def train_vae(config: dict, splits_dir: Path, checkpoints_dir: Path) -> Path:
         total_loss = 0.0
         for imgs, _ in tqdm(train_loader, desc=f"VAE epoch {epoch}/{epochs}", leave=False):
             imgs = imgs.to(device)
-            with torch.amp.autocast("cuda", enabled=(device.type == "cuda")):
-                recon, kl = model(imgs)
-                loss = nn.functional.mse_loss(recon, imgs) + kl_weight * kl
+            recon, kl = model(imgs)
+            loss = nn.functional.mse_loss(recon, imgs) + kl_weight * kl
             optimizer.zero_grad()
-            if scaler:
-                scaler.scale(loss).backward()
-                scaler.step(optimizer)
-                scaler.update()
-            else:
-                loss.backward()
-                optimizer.step()
+            loss.backward()
+            optimizer.step()
             total_loss += loss.item() * len(imgs)
         train_loss = total_loss / len(train_ds)
 
@@ -141,9 +138,8 @@ def train_vae(config: dict, splits_dir: Path, checkpoints_dir: Path) -> Path:
         with torch.no_grad():
             for imgs, _ in val_loader:
                 imgs = imgs.to(device)
-                with torch.amp.autocast("cuda", enabled=(device.type == "cuda")):
-                    recon, kl = model(imgs)
-                    loss = nn.functional.mse_loss(recon, imgs) + kl_weight * kl
+                recon, kl = model(imgs)
+                loss = nn.functional.mse_loss(recon, imgs) + kl_weight * kl
                 val_loss += loss.item() * len(imgs)
         val_loss /= len(val_ds)
         scheduler.step()
