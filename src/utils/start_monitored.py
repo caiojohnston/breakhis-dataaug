@@ -72,7 +72,14 @@ def main() -> None:
 
     creationflags = 0
     if os.name == "nt":
-        creationflags = subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.DETACHED_PROCESS
+        # CREATE_BREAKAWAY_FROM_JOB: sem isso, o Windows Terminal/ConHost pode
+        # matar o processo "desanexado" mesmo assim quando a janela fecha,
+        # porque o processo ainda pertence ao Job Object do terminal.
+        creationflags = (
+            subprocess.CREATE_NEW_PROCESS_GROUP
+            | subprocess.DETACHED_PROCESS
+            | subprocess.CREATE_BREAKAWAY_FROM_JOB
+        )
 
     with monitor_log.open("a", encoding="utf-8") as monitor_output:
         process = subprocess.Popen(
