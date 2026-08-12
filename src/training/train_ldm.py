@@ -8,9 +8,11 @@ Uso:
 """
 
 import argparse
+import json
 import logging
 import random
 import sys
+import time
 from pathlib import Path
 
 import numpy as np
@@ -197,6 +199,7 @@ def train_ldm(
     splits_dir: Path,
     checkpoints_dir: Path,
     vae_ckpt: Path | None,
+    history_path: Path | None = None,
 ) -> Path:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     log.info("LDM training | device=%s", device)
@@ -224,12 +227,26 @@ def train_ldm(
         vae, splits_dir / "train.csv", image_size, batch_size, device
     )
 
+    # VAE não é usado no loop de difusão — libera VRAM pro UNet/batch maior
+    del vae
+    torch.cuda.empty_cache()
+
     train_ds     = LatentDataset(all_latents, all_labels)
     train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True,
                               num_workers=0, pin_memory=True)
 
     # Modelo + scheduler DDPM
-    model     = ConditionedLDM(num_classes=num_classes, embedding_dim=emb_dim).to(device)
+    unet_channels = tuple(config.get("unet_block_out_channels", [128, 256, 256, 256]))
+    model = ConditionedLDM(
+        num_classes=num_classes,
+        embedding_dim=emb_dim,
+        block_out_channels=unet_channels,
+        layers_per_block=int(config.get("unet_layers_per_block", 2)),
+        attention_head_dim=int(config.get("unet_attention_head_dim", 8)),
+        gradient_checkpointing=bool(config.get("unet_gradient_checkpointing", False)),
+    ).to(device)
+    log.info("UNet block_out_channels=%s | params=%.1fM", unet_channels,
+              sum(p.numel() for p in model.parameters()) / 1e6)
     scheduler = DDPMScheduler(num_train_timesteps=timesteps)
     optimizer = AdamW(model.parameters(), lr=lr)
     lr_sched  = CosineAnnealingLR(optimizer, T_max=epochs)
@@ -243,10 +260,24 @@ def train_ldm(
     patience     = int(config.get("early_stopping_patience", 15))
     no_improve   = 0
 
+    history: list[dict] = []
+    if history_path is not None:
+        history_path.parent.mkdir(parents=True, exist_ok=True)
+        gpu_name = torch.cuda.get_device_name(0) if device.type == "cuda" else "cpu"
+        meta = {
+            "gpu": gpu_name,
+            "unet_block_out_channels": list(unet_channels),
+            "unet_params_M": sum(p.numel() for p in model.parameters()) / 1e6,
+            "batch_size": batch_size,
+            "lr": lr,
+            "epochs_planned": epochs,
+        }
+
     for epoch in range(1, epochs + 1):
         model.train()
         epoch_loss   = 0.0
         n_valid      = 0
+        epoch_t0     = time.time()
         for latents, labels in tqdm(train_loader, desc=f"LDM epoch {epoch}/{epochs}", leave=False):
             latents = latents.to(device)
             labels  = labels.to(device)
@@ -272,9 +303,18 @@ def train_ldm(
 
         epoch_loss = epoch_loss / n_valid if n_valid > 0 else float("nan")
         lr_sched.step()
-        log.info("LDM epoch %03d/%03d | loss=%.4f | no_improve=%d/%d",
-                 epoch, epochs, epoch_loss, no_improve, patience)
+        epoch_sec = time.time() - epoch_t0
+        log.info("LDM epoch %03d/%03d | loss=%.4f | no_improve=%d/%d | %.1fs",
+                 epoch, epochs, epoch_loss, no_improve, patience, epoch_sec)
         torch.save(model.state_dict(), ckpt_dir / f"epoch_{epoch:03d}.pt")
+
+        if history_path is not None:
+            history.append({
+                "epoch": epoch, "loss": epoch_loss, "seconds": round(epoch_sec, 1),
+                "n_valid_samples": n_valid,
+            })
+            with open(history_path, "w", encoding="utf-8") as f:
+                json.dump({"meta": meta, "history": history}, f, indent=2, ensure_ascii=False)
 
         if n_valid > 0 and epoch_loss < best_loss:
             best_loss  = epoch_loss
@@ -287,6 +327,13 @@ def train_ldm(
                 break
 
     log.info("LDM training concluído. Checkpoint: %s", best_path)
+    if history_path is not None:
+        with open(history_path, "w", encoding="utf-8") as f:
+            json.dump(
+                {"meta": meta, "history": history, "best_loss": best_loss, "finished": True},
+                f, indent=2, ensure_ascii=False,
+            )
+        log.info("Histórico de treino salvo em: %s", history_path)
     return best_path
 
 
@@ -328,7 +375,8 @@ def main() -> None:
     if args.stage in ("ldm", "all"):
         if vae_ckpt is None:
             vae_ckpt = args.checkpoints_dir / "vae" / "best.pt"
-        ldm_best = train_ldm(config, args.splits_dir, args.checkpoints_dir, vae_ckpt)
+        history_path = Path("results") / f"{args.config.stem}_loss_history.json"
+        ldm_best = train_ldm(config, args.splits_dir, args.checkpoints_dir, vae_ckpt, history_path)
         marker = args.checkpoints_dir / "ldm" / "training_complete.txt"
         marker.write_text("ok")
         log.info("Marcador de conclusão salvo: %s", marker)

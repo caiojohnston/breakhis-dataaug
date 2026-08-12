@@ -1,6 +1,7 @@
 # Claude Code
 CLAUDE.md
 .claude/
+AGENTS.md
 
 # Dataset bruto — não versionar (4+ GB)
 data/raw/

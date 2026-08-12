@@ -9,33 +9,34 @@ class ConditionedLDM(nn.Module):
     # Índice reservado para condicionamento nulo (classifier-free guidance)
     NULL_CLASS = 8
 
-    def __init__(self, num_classes: int = 8, embedding_dim: int = 512) -> None:
+    def __init__(
+        self,
+        num_classes: int = 8,
+        embedding_dim: int = 512,
+        block_out_channels: tuple[int, ...] = (128, 256, 256, 256),
+        layers_per_block: int = 2,
+        attention_head_dim: int = 8,
+        gradient_checkpointing: bool = False,
+    ) -> None:
         super().__init__()
         # +1 para null class (CFG)
         self.class_embedding = nn.Embedding(num_classes + 1, embedding_dim)
         # std=0.02 evita overflow FP16 em cross-attention (mesmo range que BERT/GPT)
         nn.init.normal_(self.class_embedding.weight, mean=0.0, std=0.02)
+        n_blocks = len(block_out_channels)
         self.unet = UNet2DConditionModel(
             sample_size=32,          # latente 256/8
             in_channels=4,
             out_channels=4,
-            down_block_types=(
-                "DownBlock2D",
-                "AttnDownBlock2D",
-                "AttnDownBlock2D",
-                "AttnDownBlock2D",
-            ),
-            up_block_types=(
-                "AttnUpBlock2D",
-                "AttnUpBlock2D",
-                "AttnUpBlock2D",
-                "UpBlock2D",
-            ),
-            block_out_channels=(128, 256, 256, 256),
-            layers_per_block=2,
-            attention_head_dim=8,
+            down_block_types=("DownBlock2D",) + ("AttnDownBlock2D",) * (n_blocks - 1),
+            up_block_types=("AttnUpBlock2D",) * (n_blocks - 1) + ("UpBlock2D",),
+            block_out_channels=tuple(block_out_channels),
+            layers_per_block=layers_per_block,
+            attention_head_dim=attention_head_dim,
             cross_attention_dim=embedding_dim,
         )
+        if gradient_checkpointing:
+            self.unet.enable_gradient_checkpointing()
 
     def forward(
         self,

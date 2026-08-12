@@ -1,0 +1,39 @@
+# LDM v2 — retreino em GPU emprestada (16GB VRAM / 32GB RAM)
+#
+# Investigacao 2026-08-11: Fase 0 (encode/decode do VAE congelado em imagem real)
+# mostrou SSIM medio 0,73 (min 0,54) e estrutura preservada visualmente — VAE NAO
+# e o gargalo. O gargalo identificado foi o UNet subdimensionado pra 6GB
+# (ver configs/ldm.yaml, block_out_channels=128,256,256,256, comentario
+# "conservador para GTX 1660 SUPER 6GB"). Esse arquivo dobra a largura de cada
+# bloco do UNet como primeira tentativa de retreino com mais capacidade.
+#
+# ANTES de rodar o treino de verdade na maquina emprestada:
+#   python scripts_diag/ldm_vram_probe.py --channels 256,512,512,512 --find-max-batch
+# e substituir ldm_batch_size abaixo pelo valor encontrado (nao chutar).
+
+# VAE (mantido congelado — Fase 0 descartou fine-tuning como prioridade)
+vae_lr: 1.0e-5
+vae_epochs: 10
+vae_batch_size: 2
+kl_weight: 1.0e-4
+
+# LDM / UNet — arquitetura maior (largura dobrada em relação ao ldm.yaml original)
+timesteps: 1000
+ldm_lr: 1.0e-4
+ldm_epochs: 100
+ldm_batch_size: 8          # PLACEHOLDER — rodar find-max-batch na maquina real antes de treinar
+latent_channels: 4
+image_size: 256
+num_classes: 8
+embedding_dim: 512
+
+unet_block_out_channels: [256, 512, 512, 512]   # era [128,256,256,256]
+unet_layers_per_block: 2
+unet_attention_head_dim: 8
+unet_gradient_checkpointing: false   # ligar se find-max-batch mostrar que precisa de mais folga
+
+early_stopping_patience: 15
+
+# Geração
+guidance_scale: 7.5
+gen_batch_size: 8

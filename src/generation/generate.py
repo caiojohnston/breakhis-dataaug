@@ -160,9 +160,16 @@ def generate(
     else:
         log.info("VAE base (sd-vae-ft-mse) — sem fine-tuning.")
 
-    ldm = ConditionedLDM(num_classes=num_classes, embedding_dim=emb_dim).to(device)
+    unet_channels = tuple(config.get("unet_block_out_channels", [128, 256, 256, 256]))
+    ldm = ConditionedLDM(
+        num_classes=num_classes,
+        embedding_dim=emb_dim,
+        block_out_channels=unet_channels,
+        layers_per_block=int(config.get("unet_layers_per_block", 2)),
+        attention_head_dim=int(config.get("unet_attention_head_dim", 8)),
+    ).to(device)
     ldm.load_state_dict(torch.load(ldm_ckpt, map_location=device))
-    log.info("LDM carregado: %s", ldm_ckpt)
+    log.info("LDM carregado (block_out_channels=%s): %s", unet_channels, ldm_ckpt)
 
     ddim = DDIMScheduler(
         num_train_timesteps=int(config["timesteps"]),
