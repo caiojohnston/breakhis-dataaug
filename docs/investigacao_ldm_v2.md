@@ -100,6 +100,66 @@ direto na máquina de 16GB antes do treino real**, não assumir número.
 - Regressão: `configs/ldm.yaml` original continua gerando 39,70M parâmetros
   (idêntico a antes da refatoração) — mudança não quebrou o pipeline existente.
 
+## Fase 0.5 — teste real de fine-tuning do VAE (2026-08-12, enquanto LDM v2 treina na máquina emprestada)
+
+Enquanto o retreino do LDM roda na GPU do amigo, sobrou tempo (~12h) pra testar
+uma coisa que a Fase 0 não respondeu sozinha: será que fine-tunar o VAE, mesmo
+não sendo o gargalo principal, ainda ajudaria um pouco? A estimativa antiga de
+"54h pra fine-tuning do VAE" (usada pra justificar pular essa etapa no TCC)
+nunca foi medida de verdade — só um chute conservador.
+
+**Calibração real** (`scripts_diag/vae_finetune_probe.py`, medido na GTX 1660
+SUPER local):
+
+| Batch | s/passo | VRAM | min/época |
+|---|---:|---:|---:|
+| 2 | 1,55s | 3,1GB | **63min** |
+| 4 | 4,21s | 5,2GB | 86min (pior por imagem, apesar de menos passos) |
+| 8 | 39s+ (travando) | ~5,8GB | descartado — perto do limite físico da placa |
+
+Batch=2 é o melhor ponto (mais rápido por imagem, não só o que cabe). Com
+`vae_epochs: 10` já configurado, 10 épocas ≈ **10,5h**, não 54h. A estimativa
+antiga documentada em `CLAUDE.md` estava ~5x pessimista.
+
+**Baseline em split de validação** (evita circularidade — o fine-tuning otimiza
+no train; testar reconstrução no val mede generalização de verdade):
+SSIM médio = **0,6481** (mais baixo que os 0,7267 medidos em train na Fase 0
+original — esperado, val é mais difícil por definição).
+
+**Treino real iniciado** (`checkpoints/vae/`, monitorado via
+`start_monitored.py`, log em `logs/vae_finetune.log`, config
+`configs/ldm.yaml` sem alteração — já tinha `vae_epochs: 10, vae_batch_size: 2`
+prontos). A cada época, `scripts_diag/vae_reconstruction_check.py --vae-ckpt
+checkpoints/vae/epoch_XX.pt --tag epoch_XX --split val` roda pra comparar
+contra o baseline 0,6481 — decide se vale continuar ou se estabilizou/piorou.
+
+**Bug de infraestrutura #1 encontrado ao lançar o monitor:** `start_monitored.py`
+falhava com `WinError 2` (`FileNotFoundError` no `subprocess.Popen`) quando
+chamado via Git Bash (Bash tool), mesmo com caminho absoluto e `.exe`
+explícito. Resolvido rodando o mesmo comando via PowerShell — a ferramenta
+`run_monitored.py`/`start_monitored.py` parece depender de resolução de path
+que só funciona de forma confiável a partir do PowerShell (coerente com
+`docs/operacao_runs_monitoradas.md`, cujos exemplos já eram só em PowerShell).
+Registro pra não perder tempo de novo: **sempre lançar `start_monitored.py`
+via PowerShell, nunca via Git Bash.**
+
+**Bug real #2 — o treino do VAE morria silenciosamente (sem traceback) logo
+nos primeiros passos.** Primeira hipótese (errada, registrada aqui pra
+transparência): suspeitei do `num_workers=4` do DataLoader brigando com o
+`DETACHED_PROCESS` do `start_monitored.py` no Windows. Mudei pra
+`num_workers=0` em `train_vae()` e `precompute_latents()` (esse segundo
+também usado pelo LDM — mudança mantida por ser mais segura de qualquer
+forma) e o crash **continuou** — provando que não era essa a causa.
+
+Causa real: `train_vae()` usava `torch.amp.autocast` + `GradScaler` (FP16),
+e o estágio do VAE nunca tinha recebido o mesmo tratamento que o LDM/UNet
+(que já tinha AMP desativado desde 2026-05-14 por instabilidade em FP16 —
+ver seção de bugs no `CLAUDE.md`). Removido `autocast`/`scaler` do
+`train_vae()`, treino em FP32 puro. Confirmado estável: 83+ passos sem
+queda, GPU 94% de uso, ~1,26s/passo (mais rápido até que a calibração
+inicial de 1,55s/passo) — ~51min/época real, 10 épocas ≈ **8,6h**, ainda
+melhor que a estimativa de 10,5h.
+
 ## Próximos passos (nesta ordem, ver também `CLAUDE.md` seção "A Fazer")
 
 1. Na máquina de 16GB: rodar `find-max-batch` pra `configs/ldm_v2_16gb.yaml`,
