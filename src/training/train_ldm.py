@@ -97,11 +97,13 @@ def train_vae(config: dict, splits_dir: Path, checkpoints_dir: Path) -> Path:
 
     train_ds = VAEDataset(splits_dir / "train.csv", image_size)
     val_ds   = VAEDataset(splits_dir / "val.csv",   image_size)
-    num_workers = min(4, torch.get_num_threads())
+    # num_workers=0: DataLoader multiprocessing (spawn) do Windows morre em
+    # silencio quando o processo pai roda com CREATE_NEW_PROCESS_GROUP/DETACHED
+    # (caso do start_monitored.py). 0 workers foi o que rodou estavel no probe.
     train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True,
-                              num_workers=num_workers, pin_memory=True)
+                              num_workers=0, pin_memory=True)
     val_loader   = DataLoader(val_ds,   batch_size=batch_size, shuffle=False,
-                              num_workers=num_workers, pin_memory=True)
+                              num_workers=0, pin_memory=True)
 
     model     = BreakHisVAE().to(device)
     optimizer = AdamW(model.parameters(), lr=lr)
@@ -173,8 +175,10 @@ def precompute_latents(
     """Pré-codifica todas as imagens de treino para latentes. Feito uma vez."""
     log.info("Pré-codificando latentes de %s …", csv_path)
     ds = VAEDataset(csv_path, image_size)
+    # num_workers=0: DataLoader multiprocessing (spawn) do Windows morre em
+    # silencio sob o wrapper DETACHED_PROCESS do start_monitored.py.
     loader = DataLoader(ds, batch_size=batch_size, shuffle=False,
-                        num_workers=min(4, torch.get_num_threads()), pin_memory=True)
+                        num_workers=0, pin_memory=True)
     vae.eval()
     all_latents, all_labels = [], []
     for imgs, labels in tqdm(loader, desc="Encoding latents"):
