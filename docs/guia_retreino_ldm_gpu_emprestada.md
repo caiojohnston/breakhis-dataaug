@@ -15,7 +15,7 @@ commitar antes de ir pro próximo, pra nunca perder trabalho.
   nvidia-smi
   ```
   Anota a versão de CUDA que aparece no canto (ex. "CUDA Version: 12.4") — vai
-  precisar pra instalar o PyTorch certo no passo 2.
+  precisar pra instalar o PyTorch certo no passo 3.
 
 ## 1. Pegar o código
 
@@ -31,11 +31,17 @@ git status
 git pull
 ```
 
-## 2. Pegar o dataset (NÃO vem pelo git — é 4GB+, fica de fora do repositório)
+## 2. Pegar o dataset (NÃO vem pelo git — é ~4GB, fica de fora do repositório)
 
-O Caio precisa te passar a pasta `data/raw/` inteira (pen drive, HD externo, ou
-upload em algum lugar). Ela tem que ficar **exatamente** nesse caminho, relativo
-à raiz do projeto:
+O Caio vai te mandar um **link de download** (nuvem — Drive, WeTransfer, etc.)
+com a pasta `data/raw/BreaKHis_v1/` já organizada (a extração original do
+BreakHis, ~4GB, ~7.900 imagens PNG). Não é o dataset oficial cru — é a versão
+já processada que o pipeline deste projeto espera, então baixa exatamente o
+que ele mandar, não procura o dataset original por conta própria.
+
+Depois de baixar e extrair, a pasta tem que ficar **exatamente** neste
+caminho, relativo à raiz do projeto (repare no nome duplicado
+`BreaKHis_v1/BreaKHis_v1/` — é assim mesmo, não é engano):
 
 ```
 data/raw/BreaKHis_v1/BreaKHis_v1/histology_slides/breast/...
@@ -44,6 +50,13 @@ data/raw/BreaKHis_v1/BreaKHis_v1/histology_slides/breast/...
 Os arquivos `data/splits/train.csv`, `val.csv`, `test.csv` (esses sim vêm no
 git) apontam pros caminhos dentro dessa estrutura — se a pasta não bater
 exatamente com esse caminho, o treino não vai achar as imagens.
+
+**Confirma antes de seguir pro passo 3:**
+```powershell
+Get-ChildItem -Recurse -File data\raw\BreaKHis_v1 | Measure-Object | Select-Object -ExpandProperty Count
+```
+Tem que dar **7909**. Se der 0 ou bem menos, a pasta não está no lugar certo
+ou o download não veio completo — para aqui e resolve antes de continuar.
 
 ## 3. Ambiente Python
 
