@@ -160,6 +160,58 @@ queda, GPU 94% de uso, ~1,26s/passo (mais rápido até que a calibração
 inicial de 1,55s/passo) — ~51min/época real, 10 épocas ≈ **8,6h**, ainda
 melhor que a estimativa de 10,5h.
 
+## Fase 0.5 — resultado: fine-tuning do VAE piora a reconstrução (parado na época 1)
+
+Depois de resolver os dois bugs de infraestrutura acima, o treino rodou
+estável e completou a época 1 (train=0,1624, val=0,0604 — loss numérica
+baixa). Testei o checkpoint contra o baseline congelado (SSIM 0,6481, split
+val):
+
+| Checkpoint | SSIM (val) | Δ |
+|---|---:|---:|
+| VAE congelado (baseline) | 0,6481 | - |
+| VAE fine-tunado, época 1 | **0,3288** | **-49%** |
+
+Inspeção visual confirma: a reconstrução da época 1 é um borrão rosa liso,
+sem núcleo, sem glândula, sem nenhuma estrutura celular — pior que qualquer
+imagem sintética do LDM já vista neste projeto. **Uma única época de
+fine-tuning destruiu a capacidade de reconstrução que o VAE pré-treinado já
+tinha.**
+
+**Treino interrompido nesse ponto** (evita gastar as ~8h restantes piorando
+ainda mais) e checkpoints da tentativa apagados (`checkpoints/vae/` limpo) —
+deixar esse checkpoint no caminho padrão criaria risco de `generate.py` ou
+`train_ldm.py` carregarem ele silenciosamente em vez do VAE base numa sessão
+futura.
+
+**Diagnóstico do porquê:** o objetivo de treino usado é só
+`MSE + kl_weight * KL` (`src/training/train_ldm.py::train_vae`). MSE puro é
+conhecido por favorecer reconstruções borradas — ele é minimizado pela média
+condicional dos pixels plausíveis, não pela estrutura nítida mais provável
+(problema clássico documentado na literatura de VAEs/autoencoders). O
+`sd-vae-ft-mse` original da Stability AI foi treinado com uma combinação de
+L1 + LPIPS perceptual + adversarial (PatchGAN) — nenhum desses termos está
+presente no fine-tuning local. Sem a restrição perceptual/adversarial, o
+otimizador encontra rapidamente um mínimo de MSE que é liso e sem textura,
+e uma única época (2.446 passos, todos os parâmetros do VAE sendo
+atualizados, sem warmup de learning rate) já foi suficiente pra sair do
+regime de pesos pré-treinados bons.
+
+**Isso não invalida a Fase 0 — reforça.** A Fase 0 mostrou que o VAE
+congelado já reconstrói bem. Esta Fase 0.5 mostra que tentar melhorar isso
+com fine-tuning ingênuo (só MSE+KL, sem loss perceptual, sem warmup) piora
+ativamente, não apenas "não ajuda". A decisão de manter o VAE congelado no
+TCC não é só uma limitação por falta de tempo/hardware — é uma escolha
+validada empiricamente contra a alternativa testada.
+
+**Material aproveitável pro TCC (seção de limitações ou trabalhos futuros):**
+tentativa de fine-tuning do VAE com MSE+KL puro degradou a reconstrução
+(SSIM caiu 49% em uma época, colapso visual de estrutura celular);
+hipótese é ausência de termo perceptual/adversarial no objetivo local,
+presente no treino original do checkpoint pré-treinado. Trabalho futuro:
+fine-tuning com LPIPS explícito na loss e warmup de learning rate, se
+alguém quiser retomar essa linha.
+
 ## Próximos passos (nesta ordem, ver também `CLAUDE.md` seção "A Fazer")
 
 1. Na máquina de 16GB: rodar `find-max-batch` pra `configs/ldm_v2_16gb.yaml`,

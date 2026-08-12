@@ -1,0 +1,16 @@
+[
+  {
+    "tag": "baseline",
+    "split": "val",
+    "vae_ckpt": "base_frozen",
+    "ssim_mean": 0.6480602584779263,
+    "psnr_mean": 26.175252199172974
+  },
+  {
+    "tag": "epoch_01",
+    "split": "val",
+    "vae_ckpt": "checkpoints\\vae\\epoch_01.pt",
+    "ssim_mean": 0.32884893380105495,
+    "psnr_mean": 19.81597399711609
+  }
+]
