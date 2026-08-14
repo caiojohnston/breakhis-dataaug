@@ -3,10 +3,11 @@
     "best_completed_by_f1_macro": "C50_full calibrated",
     "best_completed_f1_macro": 0.8646,
     "best_completed_by_auc": "C25",
-    "best_completed_auc": 0.9405,
+    "best_completed_auc": 0.9376,
     "best_observed_by_f1_macro": "C50_partial calibrated",
     "best_observed_f1_macro": 0.8686,
-    "interpretation": "C50_full calibrado e o melhor experimento completo por F1/balanced accuracy; C25 permanece melhor em AUC; C50_partial e evidencia complementar por ter sido interrompido."
+    "interpretation": "C50_full calibrado e o melhor experimento completo por F1/balanced accuracy; C25 permanece melhor em AUC; C50_partial e evidencia complementar por ter sido interrompido.",
+    "nota_auc_2026-08-14": "AUC recalculado com metodo unico e padrao (roc_auc_score binario direto, igual eval_binary_thresholds.py) em vez da media OvR por classe usada antes em train_classifier.py. Motivo: ~58% das predicoes do teste ficam saturadas perto de 0/1, o que tornava a media OvR instavel na 3a-4a casa decimal e produzia AUC diferente entre argmax e calibrado do MESMO modelo/checkpoint (logicamente impossivel, AUC nao depende de threshold). Accuracy/balanced accuracy/F1/matriz de confusao nao foram afetados, so o AUC de A, C25 e C50_full argmax mudou. Ver docs/investigacao_ldm_v2.md."
   },
   "rows": [
     {
@@ -16,7 +17,7 @@
       "accuracy": 0.8589,
       "balanced_accuracy": 0.8113,
       "f1_macro": 0.8288,
-      "auc": 0.8979,
+      "auc": 0.8946,
       "best_epoch": 13,
       "confusion_matrix": [
         [
@@ -37,7 +38,7 @@
       "accuracy": 0.843,
       "balanced_accuracy": 0.8127,
       "f1_macro": 0.818,
-      "auc": 0.9036,
+      "auc": 0.9035,
       "best_epoch": 14,
       "confusion_matrix": [
         [
@@ -58,7 +59,7 @@
       "accuracy": 0.849,
       "balanced_accuracy": 0.8224,
       "f1_macro": 0.826,
-      "auc": 0.9114,
+      "auc": 0.9113,
       "best_epoch": 7,
       "confusion_matrix": [
         [
@@ -79,7 +80,7 @@
       "accuracy": 0.8756,
       "balanced_accuracy": 0.8416,
       "f1_macro": 0.8531,
-      "auc": 0.9405,
+      "auc": 0.9376,
       "best_epoch": 24,
       "confusion_matrix": [
         [
@@ -100,7 +101,7 @@
       "accuracy": 0.8729,
       "balanced_accuracy": 0.8381,
       "f1_macro": 0.8498,
-      "auc": 0.9263,
+      "auc": 0.9222,
       "best_epoch": 19,
       "confusion_matrix": [
         [
