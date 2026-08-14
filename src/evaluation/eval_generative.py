@@ -24,11 +24,27 @@ from typing import Iterable
 
 import numpy as np
 import pandas as pd
+import scipy.linalg
 import torch
 import yaml
 from cleanfid import fid
 from PIL import Image
 from torchvision import transforms
+
+# clean-fid 0.1.35 chama scipy.linalg.sqrtm(..., disp=False) esperando o
+# retorno antigo em tupla (matriz, errest). O SciPy removeu o parametro
+# `disp` (e o retorno em tupla) nas versoes recentes, o que faz o FID falhar
+# silenciosamente (TypeError capturado e reportado como "FID falhou") pra
+# todo subtipo. Shim de compatibilidade pra funcionar nas duas versoes.
+_sqrtm_original = scipy.linalg.sqrtm
+
+
+def _sqrtm_compat(a, disp=True, *args, **kwargs):
+    result = _sqrtm_original(a, *args, **kwargs)
+    return result if disp else (result, None)
+
+
+scipy.linalg.sqrtm = _sqrtm_compat
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
