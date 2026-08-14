@@ -339,3 +339,43 @@ Comparacao pareada no conjunto de teste entre `A_binary_argmax` e `C50_full_cali
 
 Leitura: por imagem, o ganho do C50_full calibrado sobre o baseline A e estatisticamente significativo. Por paciente, o ganho permanece positivo em todas as metricas, mas os intervalos de confianca cruzam ou quase cruzam zero devido ao tamanho reduzido do teste (`17` pacientes). Para o TCC, a formulacao correta e: evidencia quantitativa favoravel e promissora, com cautela estatistica no nivel do paciente.
 
+## 2026-08-13 - Retreino LDM v2 na GPU emprestada (RTX 5080, 16GB)
+
+Seguido `docs/guia_retreino_ldm_gpu_emprestada.md` de ponta a ponta pela primeira vez numa maquina real com GPU 16GB (RTX 5080). UNet do LDM com o dobro da largura (`block_out_channels` 128,256,256,256 -> 256,512,512,512) em relacao a `configs/ldm.yaml` original.
+
+### Batch size
+
+`scripts_diag/ldm_vram_probe.py --channels 256,512,512,512 --find-max-batch` encontrou batch=105 como maior valor seguro (85% da VRAM) na RTX 5080 16GB. Configurado em `configs/ldm_v2_16gb.yaml` (PR #1).
+
+### Treino
+
+Early stopping na epoca 38/100 (patience=15). `best_loss=0.1618`, estavel entre 0.16-0.17 nas ultimas epocas, sem `nan` (config FP32, mesma mitigacao usada na investigacao anterior). ~29,5 min de treino total na RTX 5080 (pre-codificacao de latentes + treino). Historico completo em `results/ldm_v2_16gb_loss_history.json` (PR #1).
+
+### Geracao + avaliacao gerativa
+
+12332 imagens sinteticas geradas em `data/synthetic_v2/` (gitignored) equalizando os subtipos minoritarios ao maior grupo (`ductal_carcinoma`, ja balanceado, nao gerou). Resultado em `results/metricas_gerativas_v2.json` (PR #1).
+
+| Metrica | v1 (UNet 128,256,256,256) | v2 (UNet 256,512,512,512) |
+|---|---:|---:|
+| FID global | 219.668 | 187.4757 |
+
+FID por subtipo (v1 -> v2):
+
+| Subtipo | FID v1 | FID v2 |
+|---|---:|---:|
+| adenosis | 284.7316 | 269.1285 |
+| fibroadenoma | 235.7016 | 199.3194 |
+| phyllodes_tumor | 308.5863 | 303.3384 |
+| tubular_adenoma | 257.8646 | 230.2962 |
+| lobular_carcinoma | 230.1126 | 218.9876 |
+| mucinous_carcinoma | 259.4122 | 228.9283 |
+| papillary_carcinoma | 247.6999 | 231.1633 |
+
+Achado: dobrar a largura do UNet melhorou o FID global e o FID de todos os 7 subtipos avaliados, alem de SSIM e PSNR na maioria deles. Mesmo assim, os valores absolutos de FID/SSIM/LPIPS continuam altos (SSIM 0.14-0.23, LPIPS 0.84-0.89), repetindo a leitura da avaliacao v1: as sinteticas ainda estao longe da distribuicao real em metricas perceptuais. A contribuicao esperada continua sendo downstream/augmentacao controlada (ver C25/C50_full acima), nao substituicao do dominio real. Proximo passo natural: repetir o downstream binario (C25/C50) com as sinteticas v2 pra ver se o ganho de FID se traduz em ganho downstream.
+
+### Achado operacional: FID falhava silenciosamente por incompatibilidade scipy/clean-fid
+
+Na primeira rodada de avaliacao, `FID` retornou `null` para todos os subtipos (`status: partial_fid_failed`), log reportando `FID falhou ... sqrtm() got an unexpected keyword argument 'disp'`. Causa: `clean-fid==0.1.35` chama `scipy.linalg.sqrtm(..., disp=False)` esperando o retorno antigo em tupla `(matriz, errest)`; versoes recentes do SciPy (`1.18.0` nesta instalacao) removeram o parametro `disp`. Isso afeta qualquer instalacao fresca do `requirements.txt` com SciPy atual, nao e especifico desta maquina — quem rodar o guia do zero hoje bateria no mesmo bug.
+
+Corrigido com um shim de compatibilidade em `src/evaluation/eval_generative.py` (PR #1), sem precisar fixar a versao do SciPy. Os numeros de FID foram conferidos batendo entre a rodada com o patch aplicado direto na lib (descartado) e a rodada final so com o fix versionado no projeto.
+
