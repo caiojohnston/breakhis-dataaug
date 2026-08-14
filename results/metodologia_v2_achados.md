@@ -353,7 +353,7 @@ Early stopping na epoca 38/100 (patience=15). `best_loss=0.1618`, estavel entre 
 
 ### Geracao + avaliacao gerativa
 
-12332 imagens sinteticas geradas em `data/synthetic_v2/` (gitignored) equalizando os subtipos minoritarios ao maior grupo (`ductal_carcinoma`, ja balanceado, nao gerou). Resultado em `results/metricas_gerativas_v2.json` (PR #1).
+12332 imagens sinteticas geradas em `data/synthetic_v2/` (gitignored) equalizando os subtipos minoritarios ao maior grupo (`ductal_carcinoma`, ja balanceado, nao gerou). Resultado em `results/metricas_gerativas_v2.json`.
 
 | Metrica | v1 (UNet 128,256,256,256) | v2 (UNet 256,512,512,512) |
 |---|---:|---:|
@@ -377,5 +377,5 @@ Achado: dobrar a largura do UNet melhorou o FID global e o FID de todos os 7 sub
 
 Na primeira rodada de avaliacao, `FID` retornou `null` para todos os subtipos (`status: partial_fid_failed`), log reportando `FID falhou ... sqrtm() got an unexpected keyword argument 'disp'`. Causa: `clean-fid==0.1.35` chama `scipy.linalg.sqrtm(..., disp=False)` esperando o retorno antigo em tupla `(matriz, errest)`; versoes recentes do SciPy (`1.18.0` nesta instalacao) removeram o parametro `disp`. Isso afeta qualquer instalacao fresca do `requirements.txt` com SciPy atual, nao e especifico desta maquina — quem rodar o guia do zero hoje bateria no mesmo bug.
 
-Corrigido com um shim de compatibilidade em `src/evaluation/eval_generative.py` (PR #1), sem precisar fixar a versao do SciPy. Os numeros de FID foram conferidos batendo entre a rodada com o patch aplicado direto na lib (descartado) e a rodada final so com o fix versionado no projeto.
+Corrigido com um shim de compatibilidade em `src/evaluation/eval_generative.py`, sem precisar fixar a versao do SciPy. Os numeros de FID foram conferidos batendo entre a rodada com o patch aplicado direto na lib (descartado) e a rodada final so com o fix versionado no projeto.
 
