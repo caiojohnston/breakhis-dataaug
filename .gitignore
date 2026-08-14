@@ -8,6 +8,7 @@ data/raw/
 
 # Imagens sintéticas geradas
 data/synthetic/
+data/synthetic_v2/
 
 # Checkpoints e pesos de modelos
 checkpoints/
