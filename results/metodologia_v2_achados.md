@@ -379,3 +379,27 @@ Na primeira rodada de avaliacao, `FID` retornou `null` para todos os subtipos (`
 
 Corrigido com um shim de compatibilidade em `src/evaluation/eval_generative.py`, sem precisar fixar a versao do SciPy. Os numeros de FID foram conferidos batendo entre a rodada com o patch aplicado direto na lib (descartado) e a rodada final so com o fix versionado no projeto.
 
+## 2026-08-14 - Downstream C25/C50_full com sinteticas do LDM v2
+
+Pergunta: o ganho de FID do LDM v2 (ver entrada acima, `219.668 -> 187.4757`) se traduz em ganho no downstream binario?
+
+Rodado com os mesmos configs de C25/C50_full ja existentes, so trocando `--synthetic-dir data/synthetic_v2` e separando saida em `checkpoints/v2/` e `results/v2/` pra nao sobrescrever os resultados v1 (`results/cenario_C_binary_c25.json`, `results/cenario_C_binary_c50_full.json`) usados no Cap. 4 do TCC:
+
+```text
+python src/training/train_classifier.py --scenario C --config configs/classifier_binary_c25.yaml --synthetic-dir data/synthetic_v2 --checkpoints-dir checkpoints/v2 --results-dir results/v2
+python src/training/train_classifier.py --scenario C --config configs/classifier_binary_c50_full.yaml --synthetic-dir data/synthetic_v2 --checkpoints-dir checkpoints/v2 --results-dir results/v2
+```
+
+Resultado salvo em `results/v2/cenario_C_binary_c25.json` e `results/v2/cenario_C_binary_c50_full.json`.
+
+| Metrica | C25 v1 | C25 v2 | C50_full v1 (argmax) | C50_full v2 |
+|---|---:|---:|---:|---:|
+| Accuracy | 0.8756 | 0.8749 | 0.8729 | 0.8616 |
+| Balanced accuracy | 0.8416 | 0.8374 | 0.8381 | 0.8318 |
+| F1 macro | 0.8531 | 0.8511 | 0.8498 | 0.8388 |
+| AUC macro | 0.9405 | 0.9237 | 0.9263 | 0.9260 |
+
+Achado central: o FID melhor do LDM v2 **nao** se traduziu em downstream melhor. Nas duas fracoes testadas (C25, C50_full), o v2 ficou empatado ou levemente pior que o v1 em todas as quatro metricas, com queda mais visivel no AUC do C25 (`0.9405 -> 0.9237`). Comparacao feita sem calibracao de threshold (argmax), no mesmo criterio de `C50_full argmax` usado acima — nao foi rodada calibracao pro v2 porque o resultado ja nao mostra vantagem no argmax.
+
+Leitura para o TCC: melhorar a fidelidade perceptual do gerador (FID) nao garante melhor sinal de augmentacao pro classificador — as duas coisas parecem desacopladas neste regime. A decisao de manter o LDM v1 (ou C50_full/C25 v1) como resultado principal do Cap. 4 e o LDM v2 como nota metodologica/ablacao negativa, em vez de promove-lo a resultado principal, e sustentada por esses numeros. Hipoteses nao testadas pra uma proxima rodada, caso valha a pena: (1) o UNet maior pode estar overfitando o LDM aos poucos dados de classes raras (phyllodes_tumor tem so 60 imagens reais) mesmo com FID melhor; (2) `guidance_scale=7.5` e os 50 passos DDIM nao foram re-otimizados pra arquitetura nova.
+
